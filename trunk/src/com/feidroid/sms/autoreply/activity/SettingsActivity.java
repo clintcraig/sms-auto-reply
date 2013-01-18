@@ -58,7 +58,7 @@ public class SettingsActivity extends PreferenceActivity {
 						.equals(((EditTextPreference)object).getKey())    
 				){
 					System.out.println(Contants.DEBUG+" set keywords");
-				}else if(getResources().getString(R.string.key_auto_reply_message)
+				}else if(getResources().getString(R.string.key_psotfix_auto_reply_message)
 						.equals(((EditTextPreference)object).getKey())){
 					_getAutoReplyContent(object);
 				}
