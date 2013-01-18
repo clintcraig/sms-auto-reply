@@ -30,7 +30,7 @@ public class SettingsManager {
 			_instance = new SettingsManager(context);
 			key_is_listening = context.getResources().getString(R.string.key_is_listening);
 			key_add_postfix_to_message = context.getResources().getString(R.string.key_add_postfix_to_message);
-			key_auto_reply_message = context.getResources().getString(R.string.key_auto_reply_message);
+			key_auto_reply_message = context.getResources().getString(R.string.key_psotfix_auto_reply_message);
 			key_auto_reply_interval = context.getResources().getString(R.string.key_auto_reply_interval);
 			key_is_first_time_lauch = context.getResources().getString(R.string.key_is_first_time_lauch);
 		}
