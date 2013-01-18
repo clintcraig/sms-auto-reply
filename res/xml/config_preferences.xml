@@ -16,12 +16,6 @@
 	
 	<PreferenceCategory
 		android:title="@string/pref_category_reply_settings">
-<!-- 		<CheckBoxPreference -->
-<!-- 			android:key="@string/key_add_postfix_to_message" -->
-<!-- 			android:title="@string/pref_add_postfix_title" -->
-<!-- 			android:summary="@string/add_postfix_title" -->
-<!-- 			android:defaultValue="@string/default_should_add_postfix"> -->
-<!-- 		</CheckBoxPreference> -->
 		<EditTextPreference
 			android:key="@string/key_set_keywords"
 			android:title="@string/set_keywords"
@@ -29,12 +23,34 @@
 			android:defaultValue="@string/default_keywords_content"
 			android:dialogTitle="@string/set_keywords">
 		</EditTextPreference>
+		<CheckBoxPreference
+			android:key="@string/key_add_postfix_to_message"
+			android:title="@string/pref_add_postfix_title"
+			android:summary="@string/add_postfix_title"
+			android:defaultValue="@string/default_should_add_postfix">
+		</CheckBoxPreference>
+		
 		<EditTextPreference
-			android:key="@string/key_auto_reply_message"
+			android:key="@string/key_psotfix_auto_reply_message"
 			android:title="@string/auto_words"
 			android:summary="@string/auto_words_hint"
 			android:defaultValue="@string/default_auto_reply_content"
 			android:dialogTitle="@string/alert_content_title">
+			
+		</EditTextPreference>
+		
+		<CheckBoxPreference
+			android:key="@string/key_add_suffix_to_message"
+			android:title="@string/pref_add_suffix_title"
+			android:summary="@string/add_suffix_title"
+			android:defaultValue="@string/default_should_add_suffix">
+		</CheckBoxPreference>
+		<EditTextPreference
+			android:key="@string/key_suffix_auto_reply_message"
+			android:title="@string/suffix_auto_words"
+			android:summary="@string/suffix_auto_words_hint"
+			android:defaultValue="@string/default_auto_reply_content_suffix"
+			android:dialogTitle="@string/alert_suffix_content_title">
 		</EditTextPreference>
 		
 <!-- 		<ListPreference -->

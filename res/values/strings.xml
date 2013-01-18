@@ -42,9 +42,9 @@
     <!-- Added in the end of the message auto-replied, as an ad! -->
     <string name="auto_reply_postfix">[Auto Replied By aSMSReplier]</string>
     
-	<string name="default_auto_reply_content_suffix">. Unless your own operation, please call 0791-xxxxxxx Huadroid Softwore Stuio. </string>
+	<string name="default_auto_reply_content_suffix">. Unless your own operation, please call 5201314 Huadroid Softwore Stuio. </string>
     <!-- default values -->
-    <string name="default_auto_reply_content">Thank you for your www.xxx.com phone activation, the result you want:</string>
+    <string name="default_auto_reply_content">"Thank you for your feidroid007.m.taobao.com phone activation, the result you want:"</string>
     <string name="call_auto_reply_content">
        "Hi, I cannot reply your message at the moment, I'll contact you later!"
     </string>
@@ -52,6 +52,7 @@
 	<string name="default_auto_reply_interval">1</string>
 	<string name="default_is_frist_time">true</string>
 	<string name="default_should_add_postfix">true</string>
+	<string name="default_should_add_suffix">true</string>
 	
 	<!-- Preference information -->
 	<string name="pref_listening_title">Listening Messages</string>
@@ -60,15 +61,25 @@
 	<string name="pref_add_postfix_title">Add Post-fix to Messages</string>
 	<string name="add_postfix_title">Add post-fix by system to your messages</string>
 	
+	<string name="pref_add_suffix_title">Add Suf-fix to Messages</string>
+	<string name="add_suffix_title">Add suf-fix by system to your messages</string>
+	
 	<string name="set_keywords">Set keywords</string>
 	<string name="set_keywords_hint">Set SMS received contains keywords</string>
 	<string name="default_keywords_content">verification code</string>
 	
-	<string name="auto_words">Auto-Reply Content</string>
 	<string name="time_interval">Auto-Reply Time Interval</string>
-	<string name="auto_words_hint">Set the auto-reply content</string>
 	<string name="time_interval_hint">Set the time interval</string>
-	<string name="alert_content_title">Set Auto-Reply Content</string>
+	
+	<string name="auto_words">Auto-Reply-Postfix Content</string>
+	<string name="auto_words_hint">Set the auto-reply-postfix content</string>
+	<string name="alert_content_title">Set Auto-Reply-Postfix Content</string>
+	
+	<string name="suffix_auto_words">Auto-Reply-Suffix Content</string>
+	<string name="suffix_auto_words_hint">Set the auto-reply-suffix content</string>
+	<string name="alert_suffix_content_title">Set Auto-Reply-Suffix Content</string>
+	
+	
 	<string name="positive">Confirm</string>
 	<string name="nagative">Cancel</string>
 	<string name="pref_category_message_listening">Message Listening</string>
@@ -78,9 +89,11 @@
 	<string name="key_is_first_time_lauch">key_is_first_time_lauch</string>
 
 	<string name="key_is_listening">start_listening_pref</string>
-	<string name="key_add_postfix_to_message">key_add_postfix_to_message</string>
+	<string name="key_add_postfix_to_message">add_postfix_to_message_pref</string>
+	<string name="key_add_suffix_to_message">add_suffix_to_message_pref</string>
 	<string name="key_set_keywords">keywords_pref</string>
-	<string name="key_auto_reply_message">auto_reply_message_pref</string>
+	<string name="key_psotfix_auto_reply_message">post_auto_reply_message_pref</string>
+	<string name="key_suffix_auto_reply_message">suffix_auto_reply_message_pref</string>
 	<string name="key_auto_reply_interval">auto_reply_interval</string>
     
     <!-- To-reply list view -->
