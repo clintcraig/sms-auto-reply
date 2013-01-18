@@ -1,0 +1,25 @@
+
+		CallState|
+		CellLocation|
+		DeviceId|
+		DeviceSoftwareVersion|
+		Line1Number|
+		List<NeighboringCellInfo>|
+		NetworkCountryIso|
+		NetworkOperator|
+		NetworkOperatorName|
+		NetworkType|
+		PhoneType|
+		SimCountryIso|
+		SimOperator|
+		SimOperatorName|
+		SimSerialNumber|
+		SimState|
+		SubscriberId|
+		VoiceMailAlphaTag|
+		VoiceMailNumber|
+		hasIccCard|
+		NetworkRoaming
+
+0| null| 000000000000000| null| 15555215554| us| 310260| Android| 3| 1| us| 310260| Android| 89014103211118510720| 5| 310260000000000| Voicemail| +15552175049| true| false| 
+0| [26963,30251,-1]| 359465047175890| 01| null| cn| 46000| 中国移动| 2| 1| cn| 46002| CMCC| 89860040141201027922| 5| 460020070962326| 语音信箱| null| true| false| 
