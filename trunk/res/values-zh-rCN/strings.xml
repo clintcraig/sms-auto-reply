@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">短信设置自动回复</string>
+    
+	<!-- 各个标签的名称 -->
+    <string name="tab_contacts_title">联系人设置</string>
+    <string name="tab_to_reply_title">待回复信息</string>
+    <string name="tab_settings_title">系统设置</string>
+    
+    <!-- ProgressDialog的提示内容信息 -->
+    <string name="progress_load_contact_title">读取联系人信息</string>
+    <string name="progress_load_contact_message">读取中...</string>
+    
+    <!-- 刷新按钮名称 -->
+    <string name="menu_refresh">刷新</string>
+    
+    <!-- 当没有待回复信息的时候显示 -->
+    <string name="no_to_reply_content">没有待回复的信息</string>
+    
+    <!-- 以后需要添加搜索信息的时候使用，目前暂时没用 
+    <string name="search_contact_title">搜索联系人</string>
+    <string name="search_contact_hint">请输入联系人的名称</string>
+    -->
+    
+    <!-- Notification的相关信息 -->
+    <string name="notification_title">自动回复短信已发送</string>
+    <string name="notification_content_template">"%2$s发送给%1$s"</string>
+    <string name="start_listening_notification_title">正在监听</string>
+    <string name="start_listening_notification_content">"aSMSReplier正在监听您的短信"</string>
+    
+    <!-- 第一次登录时提示用户 -->
+    <string name="quick_tutorial_title">简易教程</string>
+    <string name="quick_tutorial_confirm">知道了！</string>
+    <string name="quick_tutorial_content">"你好！感谢使用SMS Auto Replier！\n
+        本软件将根据你的设定的关键字自动为你回复根据某公式生成的短信！用于网站用户手机激活获取验证码！也可个人使用，在你忘记携带手机或者不方便使用手机的时候尤其有用！\n
+        首先，请在请在设置关键字中设置您要过滤的关键字，\n
+        另外，你可以在设置自动回复内容中编辑您要回复的部分内容！\n
+        Enjoy!\n
+        版权所有  华卓软件
+       "</string>
+
+    <!-- 在自动发送的短信之后添加上，无法在应用程序中修改，打广告专用~ -->
+    <string name="auto_reply_postfix">[本信息由 aSMSReplier 自动发送]</string>
+    
+    <string name="default_auto_reply_content_suffix">如非本人操作，请致电0791-xxxxxxx [华卓软件工作室]</string>
+    <!-- 默认自动回复内容 -->
+    <string name="default_auto_reply_content">感谢您进行XXX网手机激活,您要的结果为:</string>
+	 <string name="call_auto_reply_content">
+        您好，我现在无法回复您的短信，稍候给您回复！
+    </string>
+	<!-- 设置信息 -->
+	<string name="pref_listening_title">监听短信</string>
+	<string name="start_listening_title">点击开始监听</string>
+	<string name="stop_listening_title">点击结束监听</string>
+	<string name="pref_add_postfix_title">自动添加信息后缀</string>
+	<string name="add_postfix_title">在自动发送的短信最后添加系统后缀</string>
+	
+	<string name="set_keywords">设置关键字</string>
+	<string name="set_keywords_hint">设置收到短信中包含的关键字</string>
+	<string name="default_keywords_content">验证码</string>
+	
+	<string name="auto_words">自动回复内容</string>
+	<string name="time_interval">自动回复时间间隔</string>
+	<string name="auto_words_hint">设置自动回复内容</string>
+	<string name="time_interval_hint">设置自动回复时间间隔</string>
+	<string name="alert_content_title">设置自动回复内容</string>
+	<string name="positive">确认</string>
+	<string name="nagative">取消</string>
+	<string name="pref_category_message_listening">短信监听</string>
+	<string name="pref_category_reply_settings">短信回复设置</string>
+	
+	<!-- 待回复信息列表 -->
+    <string name="to_reply_target_address_title">来信人姓名</string>
+	<string name="to_reply_respond_time_title">自动回复时间</string>
+	<string name="to_reply_delete_title">取消自动回复</string>
+	<string name="to_reply_delete_confirm">确认</string>
+</resources>

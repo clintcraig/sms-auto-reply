@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string-array name="possible_interval_entry_name">
+		<item>1 minutes</item>
+		<item>5 minutes</item>
+		<item>10 minutes</item>
+		<item>15 minutes</item>
+		<item>30 minutes</item>
+		<item>60 minutes</item>
+	</string-array>
+	
+	<string-array name="possible_interval_entry_value">
+		<item>1</item>
+		<item>5</item>
+		<item>10</item>
+		<item>15</item>
+		<item>30</item>
+		<item>60</item>
+	</string-array>
+</resources>
