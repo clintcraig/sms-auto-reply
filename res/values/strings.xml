@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">SMS Auto Replier</string>
+    
+    <!-- tab titles -->
+    <string name="tab_contacts_title">Contacts</string>
+    <string name="tab_to_reply_title">To Reply</string>
+    <string name="tab_settings_title">Settings</string>
+    
+    <!-- ProgressDialog -->
+    <string name="progress_load_contact_title">Loading Contacts...</string>
+    <string name="progress_load_contact_message">Loading...</string>
+    
+    <!-- Refresh button in Contacts List View -->
+    <string name="menu_refresh">Refresh</string>
+    
+    <!-- Displays when no message is in the to-reply list -->
+    <string name="no_to_reply_content">No auto-reply message in the queue!</string>
+    
+    <string name="search_contact_title">Search Contacts</string>
+    <string name="search_contact_hint">"Search by name or number"</string>
+   
+    <!-- Notification information -->
+    <string name="notification_title">Auto Reply Message Sent</string>
+    <string name="notification_content_template">"Sent to %1$s at %2$s"</string>
+    <string name="start_listening_notification_title">Now Listening</string>
+    <string name="start_listening_notification_content">"aSMSReplier is now listening to your short messages"</string>
+    
+    <!-- Quick Tutorial -->
+    <string name="quick_tutorial_title">Tutorial</string>
+    <string name="quick_tutorial_confirm">I know!</string>
+    <string name="quick_tutorial_content">"Hi,there! Thanks for using SMS Auto Replier!\n
+        This software helps you to auto-reply someone's short message!\n
+        Please pick up the contacts that you want to auto-reply in the Contacts tab,\n
+        and change the settings in the Settings tab!\n
+        Enjoy!\n
+        By Huadroid Software Stuio"</string>
+        
+    <!-- the template for to-reply list item in the list view -->
+    <string name="to_reply_content_template">"%1$s (%2$s)"</string>
+    
+    <!-- Added in the end of the message auto-replied, as an ad! -->
+    <string name="auto_reply_postfix">[Auto Replied By aSMSReplier]</string>
+    
+	<string name="default_auto_reply_content_suffix">. Unless your own operation, please call 0791-xxxxxxx Huadroid Softwore Stuio. </string>
+    <!-- default values -->
+    <string name="default_auto_reply_content">Thank you for your www.xxx.com phone activation, the result you want:</string>
+    <string name="call_auto_reply_content">
+       "Hi, I cannot reply your message at the moment, I'll contact you later!"
+    </string>
+	
+	<string name="default_auto_reply_interval">1</string>
+	<string name="default_is_frist_time">true</string>
+	<string name="default_should_add_postfix">true</string>
+	
+	<!-- Preference information -->
+	<string name="pref_listening_title">Listening Messages</string>
+	<string name="start_listening_title">Click to start listening</string>
+	<string name="stop_listening_title">Click to stop listening</string>
+	<string name="pref_add_postfix_title">Add Post-fix to Messages</string>
+	<string name="add_postfix_title">Add post-fix by system to your messages</string>
+	
+	<string name="set_keywords">Set keywords</string>
+	<string name="set_keywords_hint">Set SMS received contains keywords</string>
+	<string name="default_keywords_content">verification code</string>
+	
+	<string name="auto_words">Auto-Reply Content</string>
+	<string name="time_interval">Auto-Reply Time Interval</string>
+	<string name="auto_words_hint">Set the auto-reply content</string>
+	<string name="time_interval_hint">Set the time interval</string>
+	<string name="alert_content_title">Set Auto-Reply Content</string>
+	<string name="positive">Confirm</string>
+	<string name="nagative">Cancel</string>
+	<string name="pref_category_message_listening">Message Listening</string>
+	<string name="pref_category_reply_settings">Auto Reply Settings</string>
+	
+	<!-- preference keys -->
+	<string name="key_is_first_time_lauch">key_is_first_time_lauch</string>
+
+	<string name="key_is_listening">start_listening_pref</string>
+	<string name="key_add_postfix_to_message">key_add_postfix_to_message</string>
+	<string name="key_set_keywords">keywords_pref</string>
+	<string name="key_auto_reply_message">auto_reply_message_pref</string>
+	<string name="key_auto_reply_interval">auto_reply_interval</string>
+    
+    <!-- To-reply list view -->
+    <string name="to_reply_target_address_title">Target Name</string>
+	<string name="to_reply_respond_time_title">Respond Time</string>
+	<string name="to_reply_delete_title">Cancel Auto Reply</string>
+	<string name="to_reply_delete_confirm">Confirm</string>
+</resources>

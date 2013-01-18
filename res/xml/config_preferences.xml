@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+	android:key="system_config"
+	android:title="Config Your Preferences"
+	android:summary="set the preferences for the system">
+	
+	<PreferenceCategory
+		android:title="@string/pref_category_message_listening">
+		<CheckBoxPreference
+			android:key="@string/key_is_listening"
+			android:title="@string/pref_listening_title"
+			android:summaryOn="@string/stop_listening_title"
+			android:summaryOff="@string/start_listening_title">
+		</CheckBoxPreference>
+	</PreferenceCategory>
+	
+	<PreferenceCategory
+		android:title="@string/pref_category_reply_settings">
+<!-- 		<CheckBoxPreference -->
+<!-- 			android:key="@string/key_add_postfix_to_message" -->
+<!-- 			android:title="@string/pref_add_postfix_title" -->
+<!-- 			android:summary="@string/add_postfix_title" -->
+<!-- 			android:defaultValue="@string/default_should_add_postfix"> -->
+<!-- 		</CheckBoxPreference> -->
+		<EditTextPreference
+			android:key="@string/key_set_keywords"
+			android:title="@string/set_keywords"
+			android:summary="@string/set_keywords_hint"
+			android:defaultValue="@string/default_keywords_content"
+			android:dialogTitle="@string/set_keywords">
+		</EditTextPreference>
+		<EditTextPreference
+			android:key="@string/key_auto_reply_message"
+			android:title="@string/auto_words"
+			android:summary="@string/auto_words_hint"
+			android:defaultValue="@string/default_auto_reply_content"
+			android:dialogTitle="@string/alert_content_title">
+		</EditTextPreference>
+		
+<!-- 		<ListPreference -->
+<!-- 			android:key="@string/key_auto_reply_interval" -->
+<!-- 			android:title="@string/time_interval" -->
+<!-- 			android:summary="@string/time_interval_hint" -->
+<!-- 			android:entries="@array/possible_interval_entry_name" -->
+<!-- 			android:entryValues="@array/possible_interval_entry_value" -->
+<!-- 			android:defaultValue="1"> -->
+<!-- 		</ListPreference> -->
+	</PreferenceCategory>
+</PreferenceScreen>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string-array name="possible_interval_entry_name">
+		<item>1 分钟</item>
+		<item>5 分钟</item>
+		<item>10 分钟</item>
+		<item>15 分钟</item>
+		<item>30 分钟</item>
+		<item>60 分钟</item>
+	</string-array>
+</resources>
