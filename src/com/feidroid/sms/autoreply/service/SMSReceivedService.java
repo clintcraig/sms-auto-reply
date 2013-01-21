@@ -177,9 +177,10 @@ public class SMSReceivedService extends Service {
 				} else {
 					content = code + "";
 				}
+				
 				// must contains keywords sender message.
-				if (messageBody != null && !"".equals(messageBody)
-						&& messageBody.contains(keywords)) {
+				if (messageBody != null && !"".equals(messageBody)  //remove space  replaceAll("\\s*","");
+						&& messageBody.replaceAll("\\s*", "").contains(keywords.replaceAll("\\s*", ""))) {
 					if (content.length() > 70) {
 						// 获取自动回复框内用，如果超过一条短信长度则拆分为多条发送
 						List<String> contents = smsManager

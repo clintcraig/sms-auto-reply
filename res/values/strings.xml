@@ -51,11 +51,11 @@
 	
 	<string name="default_auto_reply_interval">1</string>
 	<string name="default_is_frist_time">true</string>
-	<string name="default_should_add_postfix">true</string>
-	<string name="default_should_add_suffix">true</string>
+	<string name="default_should_add_postfix">false</string>
+	<string name="default_should_add_suffix">false</string>
 	
 	<!-- Preference information -->
-	<string name="pref_listening_title">Listening Messages</string>
+	<string name="pref_listening_title">Listening Messages  </string>
 	<string name="start_listening_title">Click to start listening</string>
 	<string name="stop_listening_title">Click to stop listening</string>
 	<string name="pref_add_postfix_title">Add Post-fix to Messages</string>
@@ -101,4 +101,8 @@
 	<string name="to_reply_respond_time_title">Respond Time</string>
 	<string name="to_reply_delete_title">Cancel Auto Reply</string>
 	<string name="to_reply_delete_confirm">Confirm</string>
+	
+	<string name="textview_loading">"loading..."</string>
+	<string name="checkbox_toast_message">Forbidden to</string>
+	<string name="checkbox_toast_message2">Cancel forbidden to</string>
 </resources>

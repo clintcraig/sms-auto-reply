@@ -31,7 +31,7 @@ public class SMSAutoReplyActivity extends TabActivity {
 
 		SettingsManager manager = SettingsManager.getInstance(this);
 		/* Checks if the user runs the system for the very first time! */
-		System.out.println(Contants.DEBUG +"  the first time running the SMSAutoReplier  --->  "+manager.isFirstTimeLaunch());
+		//System.out.println(Contants.DEBUG +"  the first time running the SMSAutoReplier  --->  "+manager.isFirstTimeLaunch());
 		if (manager.isFirstTimeLaunch()) {
 			
 			AlertDialog.Builder dialog = new AlertDialog.Builder(this);
@@ -75,7 +75,7 @@ public class SMSAutoReplyActivity extends TabActivity {
 		TabHost.TabSpec specContacts = tabHost.newTabSpec("tagContacts");
 		specContacts.setContent(new Intent(this, ContactsActivity.class));
 		specContacts.setIndicator(getString(R.string.tab_contacts_title),
-				getResources().getDrawable(android.R.drawable.ic_input_add));
+				getResources().getDrawable(android.R.drawable.ic_dialog_dialer));
 
 		tabHost.addTab(specContacts);
 	}
