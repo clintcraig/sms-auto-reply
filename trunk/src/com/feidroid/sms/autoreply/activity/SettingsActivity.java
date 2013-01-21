@@ -34,7 +34,7 @@ public class SettingsActivity extends PreferenceActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
+		
 		addPreferencesFromResource(R.xml.config_preferences);
 
 		ListAdapter adapter = this.getPreferenceScreen().getRootAdapter();
@@ -57,7 +57,7 @@ public class SettingsActivity extends PreferenceActivity {
 				if(  getResources().getString(R.string.key_set_keywords)
 						.equals(((EditTextPreference)object).getKey())    
 				){
-					System.out.println(Contants.DEBUG+" set keywords");
+					//System.out.println(Contants.DEBUG+" set keywords");
 				}else if(getResources().getString(R.string.key_psotfix_auto_reply_message)
 						.equals(((EditTextPreference)object).getKey())){
 					_getAutoReplyContent(object);
@@ -70,7 +70,7 @@ public class SettingsActivity extends PreferenceActivity {
 		
 		//判断开机后，服务是否开启
 		isAutoListening = SMSReceivedService.isOnStart;
-		System.out.println(Contants.DEBUG+ " isAutoListening ---> "+isAutoListening);
+		//System.out.println(Contants.DEBUG+ " isAutoListening ---> "+isAutoListening);
 		if(isAutoListening){
 			startListeningP.setChecked(true);
 		}
@@ -85,10 +85,10 @@ public class SettingsActivity extends PreferenceActivity {
 					boolean isChecked = startListeningP.isChecked();
 					System.out.println("isChecked ---> "+isChecked);
 					if(!isChecked){
-						Log.d(Contants.DEBUG, " Stop SMSReceivedService.");
+						//Log.d(Contants.DEBUG, " Stop SMSReceivedService.");
 						stopService(serviceIntent);
 					}else{
-						Log.d(Contants.DEBUG, " Start SMSReceivedService.");
+						//Log.d(Contants.DEBUG, " Start SMSReceivedService.");
 						startService(serviceIntent);
 					}
 					
@@ -103,16 +103,21 @@ public class SettingsActivity extends PreferenceActivity {
 
 	private void _getTimer() {
 		
+		
+		
 	}
+	
+	
 
 	public   String autoReplyContent = "";
+	
 	private    String _getAutoReplyContent(Object object) {
 		autoReplyEP = (EditTextPreference) object;
 		
 			
 			autoReplyContent = autoReplyEP.getText();
-			Log.d(Contants.DEBUG, " default_auto_reply_content ---> "
-					+ autoReplyContent);
+			/*Log.d(Contants.DEBUG, " default_auto_reply_content ---> "
+					+ autoReplyContent);*/
 		return autoReplyContent;
 	}
 	
