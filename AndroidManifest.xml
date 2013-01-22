@@ -24,7 +24,12 @@
         </activity>
         <activity android:name=".activity.ToReplyActivity" android:launchMode="singleTask" android:screenOrientation="portrait">
         </activity>
-        <activity android:name=".activity.ContactsActivity" android:launchMode="singleTask" android:screenOrientation="portrait">
+        <activity android:name=".activity.ContactsActivity" 
+            android:launchMode="singleTask" android:screenOrientation="portrait"
+            >
+            <intent-filter>
+                <action android:name="com.feidroid.sms.autoreply.action.CONTACTSINFO" />
+            </intent-filter>
         </activity>
    		<service android:name=".service.SMSReceivedService" />
    		
@@ -33,6 +38,9 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED"></action>
             </intent-filter>
         </receiver>
+        
+   		 <provider android:name="com.feidroid.sms.autoreply.provider.ContactsInfoProvider"
+              android:authorities="com.feidroid.sms.autoreply.provider.contactsinfo.auth" />
 	</application>
 
 	<!--添加短信相关的权限 -->
@@ -51,4 +59,8 @@
 	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/> 
 	
 	<uses-permission android:name="android.permission.READ_CONTACTS" />
+	<uses-permission android:name="android.permission.INTERNET"></uses-permission>
+	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"></uses-permission>
+	<uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS"></uses-permission>
+	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"></uses-permission>
 </manifest>

@@ -20,4 +20,8 @@ public class Contants {
 	public static final String KEY_CONTACTS_PHONENUMS = "KEY_CONTACTS_PHONENUMS";
 
 	public static final String KEY_CONTACTS_ISCHECKED = "KEY_CONTACTS_ISCHECKED";
+
+	public static final String KEY_CONTACTS_EMAILS = "KEY_CONTACTS_EMAILS";
+	
+	public static final String KEY_CONTACTS_IMS = "KEY_CONTACTS_IMS";
 }
