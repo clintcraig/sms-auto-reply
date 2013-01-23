@@ -1,7 +1,9 @@
 package com.feidroid.sms.autoreply.service;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -23,8 +25,10 @@ import com.android.internal.telephony.ITelephony;
 import com.feidroid.sms.autoreply.R;
 import com.feidroid.sms.autoreply.activity.SettingsActivity;
 import com.feidroid.sms.autoreply.contants.Contants;
+import com.feidroid.sms.autoreply.provider.tables.ContactsInfoMeta;
 import com.feidroid.sms.autoreply.receiver.CallInReceiver;
 import com.feidroid.sms.autoreply.receiver.SmsComeinReceiver;
+import com.feidroid.sms.autoreply.util.ContactsUtil;
 import com.feidroid.sms.autoreply.util.SettingsManager;
 
 public class SMSReceivedService extends Service {
@@ -99,10 +103,10 @@ public class SMSReceivedService extends Service {
 	public void autoReplySms(Intent intent) {
 		// 从Intent对象中获取Bundle对象
 		Bundle bundle = intent.getExtras();
-
+		ArrayList<Map<String, Object>> list = ContactsUtil._getAllPhoneNums(this);
 		if (bundle != null && ((intent.getAction().equals(SMS_ACTION)))) {
 			// 如果是新来短信调用此函数
-			replyFromSms(intent, bundle);
+			replyFromSms(intent, bundle,list);
 			// _senderTelephneInfo2();
 		} else if (bundle != null
 				&& ((intent.getAction().equals(PHONE_ACTION)))) {
@@ -134,16 +138,14 @@ public class SMSReceivedService extends Service {
 	/*
 	 * 如果监听到短信事件，则用此方法回复短信
 	 */
-	public void replyFromSms(Intent intent, Bundle bundle) {
+	public void replyFromSms(Intent intent, Bundle bundle,ArrayList<Map<String, Object>> list) {
 		String content = "";
 		// 获取传递过来的Bundle对象
 		bundle = intent.getExtras();
 		// 获取Preferences内容
-		GetPerferences();
+		_getPerferences();
 		try {
-			// 创建PendingIntent对象
-			PendingIntent pIntent = PendingIntent.getBroadcast(
-					SMSReceivedService.this, 0, new Intent(), 0);
+			
 			if (bundle != null && ((intent.getAction().equals(SMS_ACTION)))) {
 				// 获取短信数组，用object[]数组存放
 				Object[] pdus = (Object[]) bundle.get("pdus");
@@ -154,66 +156,57 @@ public class SMSReceivedService extends Service {
 				messages[0] = SmsMessage.createFromPdu((byte[]) pdus[0]);
 				// 获取发来短信的号码
 				String sender = messages[0].getOriginatingAddress();
-				System.out.println(Contants.DEBUG + " Peron phoneNum ---->"
+				System.out.println(Contants.DEBUG + " Person phoneNum ---->"
 						+ sender);
-
-				String messageBody = messages[0].getDisplayMessageBody();
-
-				System.out.println(Contants.DEBUG + " messageBody ----> "
-						+ messageBody);
-
-				// 获取发送短信人的手机号码最后3位，以公式：x7+14 返回结果。
-				int code = Integer
-						.valueOf(sender.substring(sender.length() - 3)) * 7 + 14;// 13764565987
-																					// -->
-																					// 987
-				System.out.println(Contants.DEBUG + " code ----> " + code);
-				if (isAddPostfix && isAddSuffix) {
-					content = contentPostfix + code + contentSuffix;
-				} else if (!isAddPostfix && isAddSuffix) {
-					content = code + contentSuffix;
-				} else if (isAddPostfix && !isAddSuffix) {
-					content = contentPostfix + code;
-				} else {
-					content = code + "";
-				}
-				
-				// must contains keywords sender message.
-				if (messageBody != null && !"".equals(messageBody)  //remove space  replaceAll("\\s*","");
-						&& messageBody.replaceAll("\\s*", "").contains(keywords.replaceAll("\\s*", ""))) {
-					if (content.length() > 70) {
-						// 获取自动回复框内用，如果超过一条短信长度则拆分为多条发送
-						List<String> contents = smsManager
-								.divideMessage(content);
-						for (String contentDiv : contents) {
-							// 短信发送
-							smsManager.sendTextMessage(sender, null,
-									contentDiv, pIntent, null);
+				String[] keyStrings = null;
+				for(Map<String , Object> map :list){
+					keyStrings = new String[2];
+						String phonesString = (String)map.get(ContactsInfoMeta.CONTACTSINFO_PHONENUMS);
+						String shouldReplyString = (String)map.get(ContactsInfoMeta.CONTACTSINFO_SHOULDREPLY);
+						System.out.println(Contants.DEBUG+" phonesString "+phonesString+" - " +shouldReplyString);
+						
+						if(phonesString != null && phonesString.replaceAll("-", "").contains(sender)){
+							keyStrings[0]= "true";
+							if("true".equals(shouldReplyString)){
+								keyStrings[1]="true";
+							}else{
+								keyStrings[1]="false";
+							}
+							break;
+						}else{
+							keyStrings[0]= "false";
 						}
-					} else {
-						smsManager.sendTextMessage(sender, null, content,
-								pIntent, null);
-					}
-					// 自动回复短信后用NotificationManager用户
-					notifiUser(sender);
-					System.out.println(Contants.DEBUG
-							+ " notifuUser auto reply");
-				} else {
-					// do noting.
-					System.out.println(Contants.DEBUG
-							+ " Don't contains keywords do noting");
 				}
+				System.out.println(Contants.DEBUG+" String[0]  "+keyStrings[0]+" - String[1]  " +keyStrings[1]);
+				String phonesString = keyStrings[0];
+				String shouldReplyString = keyStrings[1];
+				
+						if("true".equals(phonesString)){
+							if("true".equals(shouldReplyString)){
+								_send(content,sender);
+								System.out.println(Contants.DEBUG+" if true should reply ");
+							}else{
+								System.out.println(Contants.DEBUG+" if false don't  reply ");
+							}
+							
+						}else{
+							_send(content,sender);
+							System.out.println(Contants.DEBUG+" don't contains auto reply ");
+						}
+								
 			}
+			
+			
 		} catch (Exception e) {
-			Toast.makeText(this,
+			/*Toast.makeText(this,
 					Contants.ERROR + " " + e.getLocalizedMessage(),
 					Toast.LENGTH_LONG).show();
-			System.out.println(Contants.ERROR + " " + e.getLocalizedMessage());
+			System.out.println(Contants.ERROR + " " + e.getLocalizedMessage());*/
 
 		}
 	}
 
-	private void GetPerferences() {
+	private void _getPerferences() {
 
 		try {
 
@@ -224,18 +217,18 @@ public class SMSReceivedService extends Service {
 			// 0);//不能使用这中方法。
 			keywords = sp.getString("keywords_pref", "");
 
-			isAddPostfix = sp.getBoolean("add_postfix_to_message_pref", true);
-			isAddSuffix = sp.getBoolean("add_suffix_to_message_pref", true);
+			isAddPostfix = sp.getBoolean("add_postfix_to_message_pref", false);
+			isAddSuffix = sp.getBoolean("add_suffix_to_message_pref", false);
 
 			contentPostfix = sp.getString("post_auto_reply_message_pref", "");
 			contentSuffix = sp.getString("suffix_auto_reply_message_pref", "");
-			System.out
+			/*System.out
 					.println(Contants.DEBUG + " Is add Postfix message ----> "
 							+ isAddPostfix + "\n" + Contants.DEBUG
 							+ " Postfix message ----> " + contentPostfix + "\n"
 							+ Contants.DEBUG + " Is add Sufffix message ----> "
 							+ isAddSuffix + "\n" + Contants.DEBUG
-							+ " Suffix message ----> " + contentSuffix);
+							+ " Suffix message ----> " + contentSuffix);*/
 		} catch (Exception e) {
 			Toast.makeText(this, Contants.ERROR + " " + e.getMessage(),
 					Toast.LENGTH_LONG).show();
@@ -243,6 +236,60 @@ public class SMSReceivedService extends Service {
 		}
 	}
 
+	
+	public void _send(String content,String sender){
+		
+		// 创建PendingIntent对象
+					PendingIntent pIntent = PendingIntent.getBroadcast(
+							SMSReceivedService.this, 0, new Intent(), 0);
+					
+		String messageBody = messages[0].getDisplayMessageBody();
+		
+		System.out.println(Contants.DEBUG + " messageBody ----> "
+				+ messageBody);
+		
+		// 获取发送短信人的手机号码最后3位，以公式：x7+14 返回结果。
+		int code = Integer
+				.valueOf(sender.substring(sender.length() - 3)) * 7 + 14;// 13764565987
+		// -->
+		// 987
+		//System.out.println(Contants.DEBUG + " code ----> " + code);
+		if (isAddPostfix && isAddSuffix) {
+			content = contentPostfix + code + contentSuffix;
+		} else if (!isAddPostfix && isAddSuffix) {
+			content = code + contentSuffix;
+		} else if (isAddPostfix && !isAddSuffix) {
+			content = contentPostfix + code;
+		} else {
+			content = code + "";
+		}
+		//System.out.println(Contants.DEBUG + " keywords ----> " + keywords);
+		// must contains keywords sender message.
+		if (messageBody != null && !"".equals(messageBody)  //remove space  replaceAll("\\s*","");
+				&& messageBody.toLowerCase().replaceAll("\\s*", "").contains(keywords.toLowerCase().replaceAll("\\s*", ""))) {
+			if (content.length() > 70) {
+				// 获取自动回复框内用，如果超过一条短信长度则拆分为多条发送
+				List<String> contents = smsManager
+						.divideMessage(content);
+				for (String contentDiv : contents) {
+					// 短信发送
+					smsManager.sendTextMessage(sender, null,
+							contentDiv, pIntent, null);
+				}
+			} else {
+				smsManager.sendTextMessage(sender, null, content,
+						pIntent, null);
+			}
+			// 自动回复短信后用NotificationManager用户
+			notifiUser(sender);
+			/*System.out.println(Contants.DEBUG
+					+ " notifuUser auto reply");*/
+		} else {
+			// do noting.
+			System.out.println(Contants.DEBUG
+					+ " Don't contains keywords do noting");
+		}
+	}
 	/*
 	 * 如果监听到来电事件，则用此方法回复短信
 	 */
@@ -328,7 +375,7 @@ public class SMSReceivedService extends Service {
 		PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
 				intent, PendingIntent.FLAG_UPDATE_CURRENT);
 		notification.flags = Notification.FLAG_AUTO_CANCEL;
-		notification.defaults = Notification.DEFAULT_SOUND;
+		//notification.defaults = Notification.DEFAULT_SOUND;
 		/* 设置通知显示的参数 */
 		notification.setLatestEventInfo(this, "来自 " + sender + "短信或用户电话",
 				"已自动回复短信，请稍后关注^_^", pendingIntent);

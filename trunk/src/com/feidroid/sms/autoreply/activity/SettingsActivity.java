@@ -83,12 +83,12 @@ public class SettingsActivity extends PreferenceActivity {
 				public boolean onPreferenceClick(Preference preference) {
 					
 					boolean isChecked = startListeningP.isChecked();
-					System.out.println("isChecked ---> "+isChecked);
+					//System.out.println("isChecked ---> "+isChecked);
 					if(!isChecked){
-						//Log.d(Contants.DEBUG, " Stop SMSReceivedService.");
+						Log.d(Contants.DEBUG, " Stop SMSReceivedService");
 						stopService(serviceIntent);
 					}else{
-						//Log.d(Contants.DEBUG, " Start SMSReceivedService.");
+						Log.d(Contants.DEBUG, " Start SMSReceivedService");
 						startService(serviceIntent);
 					}
 					
