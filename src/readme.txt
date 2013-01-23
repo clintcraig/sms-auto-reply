@@ -33,7 +33,26 @@
 6.获取手机所有短信
 2013-1-20
 7.获取所有联系人，并且实现了，勾选某联系人，禁止自动回复短信给所勾选的联系人。
-  全选，全不选，搜索功能。
+表结构：
+CREATE TABLE contactsinfo (
+	_id INTEGER PRIMARY KEY AUTOINCREMENT, 
+	contacts_id NUMERIC, 
+	contacts_displayname TEXT, 
+	contacts_phonenums TEXT, 
+	contacts_shouldreply TEXT,
+	contacts_emails TEXT,
+	contacts_im TEXT);
+CREATE INDEX idx_contactsinfo ON contactsinfo(_id ASC);
+1>当contacts_shouldreply = "true" 和 不是联系人的短信，会自动回复
+2>当勾选某联系人，设置contacts_shouldreply = "false" 不会自动回复
+
+  全选，全不选：实现勾选后，将数据库中的字段contacts_shouldreply = "false" 禁止自动回复。
+  
+  搜索功能：
+  
   实现方法：将所有联系人，添加到表ContactsInfo中，设置
+  
+  
+  
   
 

@@ -3,6 +3,7 @@ package com.feidroid.sms.autoreply.receiver;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 
 import com.feidroid.sms.autoreply.activity.SMSAutoReplyActivity;
 import com.feidroid.sms.autoreply.contants.Contants;
@@ -20,11 +21,11 @@ public class BootCompletedReceiver extends BroadcastReceiver {
 			Intent intentActivity = new Intent(context,SMSAutoReplyActivity.class);
 			intentActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 			context.startActivity(intentActivity);
-			System.out.println(Contants.DEBUG+" Boot completed ");
+			Log.d(Contants.DEBUG, " Boot completed ");
 			//启动某些服务
 			Intent intentService = new Intent(context,SMSReceivedService.class);
 			context.startService(intentService);
-			System.out.println(Contants.DEBUG+" Start SMSReceivedService ");
+			Log.d(Contants.DEBUG, " Start SMSReceivedService ");
 		}
 		
 	}

@@ -5,8 +5,10 @@ import java.util.List;
 import java.util.Map;
 
 import android.app.ListActivity;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -270,7 +272,7 @@ public class ContactsActivity extends ListActivity implements
 						GetContentValuesFromBean
 								.getContactsValues(contactsInfoBean));
 				if (uri != null) {
-					System.out.println(Contants.DEBUG +">"+ contactsInfoBean.getContactId()+" uri  isnert success ----> " + uri);
+					//System.out.println(Contants.DEBUG +">"+ contactsInfoBean.getContactId()+" uri  isnert success ----> " + uri);
 				}
 			}
 			else {
@@ -279,7 +281,7 @@ public class ContactsActivity extends ListActivity implements
 						GetContentValuesFromBean
 								.getContactsValues(contactsInfoBean), ContactsInfoMeta.CONTACTSINFO_ID+" = ?",
 						new String[]{contactsInfoBean.getContactId()});
-				System.out.println(Contants.DEBUG + " update success ----->" + update);
+				//System.out.println(Contants.DEBUG + " update success ----->" + update);
 
 			}
 		}
@@ -472,6 +474,9 @@ public class ContactsActivity extends ListActivity implements
 			contactsDataIdAndDisplayName.get(index).put(Contants.KEY_CONTACTS_ISCHECKED, false);
 		}
 		checkboxHandler.sendEmptyMessage(0);
+		//取消全选，true 允许自动回复
+		_updateContactsInfo("true");
+		
 	}
 
 	private void _selectAllContacts() {
@@ -480,10 +485,25 @@ public class ContactsActivity extends ListActivity implements
 		for (int i = 0; i < count; i++) {
 			contactsDataIdAndDisplayName.get(i).put(Contants.KEY_CONTACTS_ISCHECKED, true);
 		}
-		// System.out.println(Contants.DEBUG+" count ----> "+count
-		// +" --------> ");
+		 System.out.println(Contants.DEBUG+" count ----> "+count
+		 +" --------> ");
 		checkboxHandler.sendEmptyMessage(0);
+		//全选   "false"将contacts_shouldreply  = "false"
+		_updateContactsInfo("false");
 	}
+
+	public void _updateContactsInfo(String string) {
+		
+		ContentValues values = new  ContentValues();
+		values.put(ContactsInfoMeta.CONTACTSINFO_SHOULDREPLY, string);
+				int update = getContentResolver().update(
+						ContactsInfoMeta.CONTENT_URI
+						, values
+						,null,
+						null);
+		System.out.println(Contants.DEBUG + " update success ----->" + update);
+	}
+
 
 	@Override
 	protected void onResume() {
