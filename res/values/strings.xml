@@ -109,4 +109,6 @@
 	<string name="select_all_checkbox">Select All</string>
 	<string name="deselect_all_checkbox">Deselect All</string>
 	<string name="searchform_all_checkbox">Search</string>
+	<string name="selectbtn_str">Selected</string>
+	<string name="clearbtn_str">Clear SMS</string>
 </resources>

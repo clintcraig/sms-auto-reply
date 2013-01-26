@@ -125,7 +125,18 @@ public class ContactsUtil {
 					
 				}
 				contactsMap.put(Contants.KEY_CONTACTS_PHOTOBMP, photoBmp);
-				contactsMap.put(Contants.KEY_CONTACTS_ISCHECKED, false);
+				//初始化checkbox,如果勾选true，但是contactsinfo表中的contacts_shouldreply='false'
+				//所以默认，不勾选，contacts_shouldreply='true';
+				boolean exist = _existByContactsId(_id,context);
+				if(exist){
+					System.out.println(Contants.DEBUG 
+							+ " exist 2  -------> " + exist);
+					contactsMap.put(Contants.KEY_CONTACTS_ISCHECKED, "true".equals(_getContactsShouldreply(_id,context))?false:true);
+					
+				}else{
+					
+					contactsMap.put(Contants.KEY_CONTACTS_ISCHECKED, false);
+				}
 				contactsMap.put(Contants.KEY_CONTACTS_EMAILS,
 						emailsString.toString());
 				contactsMap.put(Contants.KEY_CONTACTS_IMS, imString);
@@ -139,6 +150,8 @@ public class ContactsUtil {
 		}
 		return contactsData;
 	}
+
+	
 
 	public static ArrayList<Map<String, Object>> _getAllPhoneNums(Context context){
 		ArrayList<Map<String, Object>>  list = new ArrayList<Map<String, Object>>();
@@ -201,17 +214,27 @@ public class ContactsUtil {
 			contactsMap.put(Contants.KEY_CONTACTS_ID, _id);
 			contactsMap.put(Contants.KEY_CONTACTS_DISPLAYNAME, displayName);
 			contactsMap.put(Contants.KEY_CONTACTS_PHOTOBMP, photoBmp);
-			contactsMap.put(Contants.KEY_CONTACTS_ISCHECKED, false);
+			//初始化checkbox,如果勾选true，但是contactsinfo表中的contacts_shouldreply='false'
+			//所以默认，不勾选，contacts_shouldreply='true';
+			boolean exist = _existByContactsId(_id,context);
+			if(exist){
+				System.out.println(Contants.DEBUG 
+						+ " exist 1  -------> " + exist);
+				contactsMap.put(Contants.KEY_CONTACTS_ISCHECKED, "true".equals(_getContactsShouldreply(_id,context))?false:true);
+				
+			}else{
+				
+				contactsMap.put(Contants.KEY_CONTACTS_ISCHECKED, false);
+			}
 			contactsData.add(contactsMap);
 		}
 		return contactsData;
 	}
 
-	public static boolean _existByContactsId(ContactsInfoBean contactsInfoBean,
+	public static boolean _existByContactsId(String contacts_id,
 			Context context) {
 		// TODO Auto-generated method stub
 		boolean exist = false;
-		String contacts_id = contactsInfoBean.getContactId();
 		Cursor c = context.getContentResolver().query(
 				ContactsInfoMeta.CONTENT_URI, 
 				null,
@@ -221,8 +244,20 @@ public class ContactsUtil {
 		if( c != null  &&  c.getCount()>0){
 			exist = true;	
 		}
-		/*System.out.println(Contants.DEBUG 
-				+ " exist  -------> " + exist);*/
+		
 		return exist;
+	}
+	private static String _getContactsShouldreply(String contacts_id, Context context) {
+		String valueString = "";
+		Cursor c = context.getContentResolver().query(
+				ContactsInfoMeta.CONTENT_URI, 
+				new String[]{ContactsInfoMeta.CONTACTSINFO_SHOULDREPLY},
+				ContactsInfoMeta.CONTACTSINFO_ID + "=?",
+				new String[] { contacts_id+"" }, null);
+		while(c.moveToNext()){
+			valueString = c.getString(c.getColumnIndex(ContactsInfoMeta.CONTACTSINFO_SHOULDREPLY));
+		}
+		//System.out.println(Contants.DEBUG+" _id="+contacts_id+",valueString="+valueString);
+		return valueString;
 	}
 }
