@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content" >
+
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/clearbg"
+        android:layout_width="fill_parent"
+         android:layout_height="60dip"
+        android:layout_alignParentBottom="true"
+            android:background="#cccccc" 
+         >
+
+        <Button
+            android:id="@+id/clearbtn"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal|center_vertical"
+            android:layout_marginLeft="50dip"
+            android:layout_marginRight="50dip"
+            android:layout_gravity="center_vertical|center_horizontal"
+            android:layout_marginTop="5dip"
+            android:layout_marginBottom="5dip"
+            android:text="@string/clearbtn_str" 
+            />
+        
+    </LinearLayout>
+
+    <ListView
+        android:id="@android:id/list"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:layout_above="@id/clearbg" />
+
+</RelativeLayout>

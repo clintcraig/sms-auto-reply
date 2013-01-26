@@ -92,5 +92,7 @@
 	<string name="select_all_checkbox">全选</string>
 	<string name="deselect_all_checkbox">取消全选</string>
 	<string name="searchform_all_checkbox">查找</string>
+	<string name="selectbtn_str">选中</string>
+	<string name="clearbtn_str">清空短信</string>
 	
 </resources>

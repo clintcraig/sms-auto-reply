@@ -30,6 +30,7 @@ import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
 import android.widget.AbsListView;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -60,7 +61,11 @@ public class ContactsActivity extends ListActivity implements
 	private Handler checkboxHandler;
 	private Handler insertHandler;
 
-	private static class EfficientAdapter extends BaseAdapter {
+	private Button selectedButton ;
+	private ArrayList<String> contactsIdStrings = new ArrayList<String>();
+	
+	
+	private  class EfficientAdapter extends BaseAdapter {
 		private LayoutInflater mInflater;
 		private Bitmap mIcon2;
 		private ArrayList<Map<String, Object>> contactsData;
@@ -161,8 +166,9 @@ public class ContactsActivity extends ListActivity implements
 					final String displayName = (String) contactsData.get(
 							position).get(Contants.KEY_CONTACTS_DISPLAYNAME);
 					holder.text.setText(displayName);
-					holder.textId.setText((String) contactsData.get(position)
-							.get(Contants.KEY_CONTACTS_ID));
+					final String contacts_id = (String) contactsData.get(position)
+							.get(Contants.KEY_CONTACTS_ID);
+					holder.textId.setText(contacts_id);
 
 					holder.icon.setImageBitmap(contactsData.get(position).get(
 							Contants.KEY_CONTACTS_PHOTOBMP) == null ? mIcon2
@@ -170,19 +176,41 @@ public class ContactsActivity extends ListActivity implements
 									Contants.KEY_CONTACTS_PHOTOBMP));
 					final boolean isChecked = (Boolean) contactsData.get(
 							position).get(Contants.KEY_CONTACTS_ISCHECKED);
+					
 					holder.checkbox.setChecked(isChecked);
 					holder.checkbox.setOnClickListener(new OnClickListener() {
 						@Override
 						public void onClick(View v) {
-
+							System.out.println(Contants.DEBUG+" check  ----> " +isChecked);
 							if (isChecked) {
-								contactsData.get(position).put(
-										Contants.KEY_CONTACTS_ISCHECKED, false);
+								
+								Toast.makeText(parent.getContext(),"cancel",Toast.LENGTH_SHORT ).show();
+								/*_updateContactsInfo(String.valueOf(isChecked),contacts_id);*/
+								for(int i=0;i<  contactsIdStrings.size();i++){
+									System.out.println(Contants.DEBUG+" contactsIdStrings.get(i) --------> "+contactsIdStrings.get(i));
+									
+									if(contacts_id.equals(contactsIdStrings.get(i))){
+										contactsIdStrings.remove(contacts_id);
+										System.out.println(Contants.DEBUG+" remove --------> "+contacts_id);
+									}
+								}
+								selectedButton.setText(getResources().getString(R.string.selectbtn_str)+"("+contactsIdStrings.size()+")");
+								contactsData.get(position).put(Contants.KEY_CONTACTS_ISCHECKED, false);
+								
 							} else {
-								contactsData.get(position).put(
-										Contants.KEY_CONTACTS_ISCHECKED, true);
+								Toast.makeText(parent.getContext(),"check",Toast.LENGTH_SHORT ).show();
+								/*_updateContactsInfo(String.valueOf(isChecked),contacts_id);*/
+								if(!contactsIdStrings.contains(contacts_id)){
+								System.out.println(Contants.DEBUG+" contacts_id --------> "+contacts_id);
+								
+									contactsIdStrings.add(contacts_id);
+								}
+								selectedButton.setText(getResources().getString(R.string.selectbtn_str)+"("+contactsIdStrings.size()+")");
+								contactsData.get(position).put(Contants.KEY_CONTACTS_ISCHECKED, true);
+								
 							}
-							// checkboxHandler.sendEmptyMessage(0);
+							System.out.println(Contants.DEBUG+" -------- "+contactsIdStrings);
+							checkboxHandler.sendEmptyMessage(0);
 						}
 					});
 				}
@@ -190,7 +218,7 @@ public class ContactsActivity extends ListActivity implements
 			return convertView;
 		}
 
-		static class ViewHolder {
+		 class ViewHolder {
 			TextView text;
 			TextView textId;
 			ImageView icon;
@@ -198,10 +226,28 @@ public class ContactsActivity extends ListActivity implements
 		}
 	}
 
+	private void _selectSomeContacts() {
+		// TODO Auto-generated method stub
+		for(int i=0;i<contactsIdStrings.size();i++){
+			_updateContactsInfo("false", contactsIdStrings.get(i));
+		}
+	}
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		this.setContentView(R.layout.contacts);
+		selectedButton = (Button) findViewById(R.id.selectbtn);
+		selectedButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if(contactsIdStrings != null && contactsIdStrings.size()>0){
+					Toast.makeText(ContactsActivity.this, "selected", Toast.LENGTH_SHORT).show();
+					_selectSomeContacts();
+				}
+			}
 
+			
+		});
 		mWindowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
 
 		// Use an existing ListAdapter that will map an array
@@ -265,7 +311,7 @@ public class ContactsActivity extends ListActivity implements
 		contactsData = ContactsUtil._setContactsData(this);
 		List<ContactsInfoBean> list = _getContactInfoBean(contactsData);
 		for (ContactsInfoBean contactsInfoBean : list) {
-			if (!ContactsUtil._existByContactsId(contactsInfoBean, this)) {
+			if (!ContactsUtil._existByContactsId(contactsInfoBean.getContactId(), this)) {
 
 				Uri uri = getContentResolver().insert(
 						ContactsInfoMeta.CONTENT_URI,
@@ -327,7 +373,7 @@ public class ContactsActivity extends ListActivity implements
 							.show();
 				} else {
 					efficientAdapter.notifyDataSetChanged();
-					// setListAdapter(efficientAdapter);
+					setListAdapter(efficientAdapter);
 				}
 			}
 			loadingDialog.dismiss();
@@ -337,8 +383,8 @@ public class ContactsActivity extends ListActivity implements
 		protected void onPreExecute() {
 			// TODO Auto-generated method stub
 			super.onPreExecute();
-			loadingDialog = new CustomProgressDialog(ContactsActivity.this);
-			loadingDialog.show();
+//			loadingDialog = new CustomProgressDialog(ContactsActivity.this);
+//			loadingDialog.show();
 
 		}
 
@@ -475,7 +521,7 @@ public class ContactsActivity extends ListActivity implements
 		}
 		checkboxHandler.sendEmptyMessage(0);
 		//取消全选，true 允许自动回复
-		_updateContactsInfo("true");
+		_updateContactsInfo("true","all");
 		
 	}
 
@@ -489,18 +535,31 @@ public class ContactsActivity extends ListActivity implements
 		 +" --------> ");
 		checkboxHandler.sendEmptyMessage(0);
 		//全选   "false"将contacts_shouldreply  = "false"
-		_updateContactsInfo("false");
+		_updateContactsInfo("false","all");
 	}
 
-	public void _updateContactsInfo(String string) {
+	public void _updateContactsInfo(String string,String allOrContactsId) {
 		
 		ContentValues values = new  ContentValues();
-		values.put(ContactsInfoMeta.CONTACTSINFO_SHOULDREPLY, string);
-				int update = getContentResolver().update(
-						ContactsInfoMeta.CONTENT_URI
-						, values
-						,null,
-						null);
+		int update = 0;
+		if("all".equals(allOrContactsId)){
+			
+			values.put(ContactsInfoMeta.CONTACTSINFO_SHOULDREPLY, string);
+			update  = getContentResolver().update(
+					ContactsInfoMeta.CONTENT_URI
+					, values
+					,null,
+					null);
+		}else{
+			
+			values.put(ContactsInfoMeta.CONTACTSINFO_SHOULDREPLY, string);
+			update = getContentResolver().update(
+					ContactsInfoMeta.CONTENT_URI
+					, values
+					,ContactsInfoMeta.CONTACTSINFO_ID+"  = ?",
+					new String[]{allOrContactsId});
+			
+		}
 		System.out.println(Contants.DEBUG + " update success ----->" + update);
 	}
 
