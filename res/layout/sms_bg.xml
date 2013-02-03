@@ -3,7 +3,7 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content" >
 
-    <LinearLayout
+    <!--  <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/clearbg"
         android:layout_width="fill_parent"
@@ -25,12 +25,20 @@
             android:text="@string/clearbtn_str" 
             />
         
-    </LinearLayout>
+    </LinearLayout>-->
 
     <ListView
         android:id="@android:id/list"
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
-        android:layout_above="@id/clearbg" />
+       
+        
+        android:fastScrollEnabled="true"
+        android:drawSelectorOnTop="true"
+        android:fadingEdge="none"
+        android:fadeScrollbars="true"
+        android:scrollingCache="true"
+        android:transcriptMode="alwaysScroll"
+        />
 
 </RelativeLayout>

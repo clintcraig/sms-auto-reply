@@ -84,7 +84,7 @@
 	<string name="to_reply_delete_title">取消自动回复</string>
 	<string name="to_reply_delete_confirm">确认</string>
 	
-	<string name="textview_loading">"加载中..."</string>
+	<string name="textview_loading">"加载中,请您稍等片刻&#8230;"</string>
 	<string name="checkbox_toast_message">禁止</string>
 	<string name="checkbox_toast_message2">取消禁止</string>
 	
@@ -95,4 +95,8 @@
 	<string name="selectbtn_str">选中</string>
 	<string name="clearbtn_str">清空短信</string>
 	
+	<string name="has_checked_your_search">"已选中您搜索的结果!"</string>
+	<string name="phone">"手机: "</string>
+	<string name="loading_contacts">"获取通讯录中&#8230;请稍候"</string>
+	<string name="has_no_contacts_tip">"对不起,未能查找到手机号!"</string>
 </resources>
