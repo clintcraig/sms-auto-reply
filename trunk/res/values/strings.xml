@@ -4,12 +4,12 @@
     
     <!-- tab titles -->
     <string name="tab_contacts_title">Contacts</string>
-    <string name="tab_to_reply_title">To Reply</string>
+    <string name="tab_to_reply_title">SMS Inbox</string>
     <string name="tab_settings_title">Settings</string>
     
     <!-- ProgressDialog -->
-    <string name="progress_load_contact_title">Loading Contacts...</string>
-    <string name="progress_load_contact_message">Loading...</string>
+    <string name="progress_load_contact_title">"Loading Contacts&#8230;"</string>
+    <string name="progress_load_contact_message">"Loading&#8230;"</string>
     
     <!-- Refresh button in Contacts List View -->
     <string name="menu_refresh">Refresh</string>
@@ -102,7 +102,7 @@
 	<string name="to_reply_delete_title">Cancel Auto Reply</string>
 	<string name="to_reply_delete_confirm">Confirm</string>
 	
-	<string name="textview_loading">"loading..."</string>
+	<string name="textview_loading">"loading ,please wait&#8230;"</string>
 	<string name="checkbox_toast_message">Forbidden to</string>
 	<string name="checkbox_toast_message2">Cancel forbidden to</string>
 	
@@ -111,4 +111,10 @@
 	<string name="searchform_all_checkbox">Search</string>
 	<string name="selectbtn_str">Selected</string>
 	<string name="clearbtn_str">Clear SMS</string>
+	
+	
+	<string name="has_checked_your_search">Checked your search</string>
+	<string name="phone">"Cell:"</string>
+	<string name="loading_contacts">"loading your contacts#8230;please wait"</string>
+	<string name="has_no_contacts_tip">"Sorry,has no contacts!"</string>
 </resources>

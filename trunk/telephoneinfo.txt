@@ -1,8 +1,8 @@
 
-		CallState|
-		CellLocation|
-		DeviceId|
-		DeviceSoftwareVersion|
+		CallState|0
+		CellLocation|[26963,30251,-1]
+		DeviceId|359465047175890 (IMEI)
+		DeviceSoftwareVersion|01
 		Line1Number|
 		List<NeighboringCellInfo>|
 		NetworkCountryIso|
@@ -15,11 +15,178 @@
 		SimOperatorName|
 		SimSerialNumber|
 		SimState|
-		SubscriberId|
+		SubscriberId|    460020070962326  (IMSI)
 		VoiceMailAlphaTag|
 		VoiceMailNumber|
 		hasIccCard|
 		NetworkRoaming
-
+手机卡：15170418434 中国移动动感地带
+0| [26963,30251,-1]| 359465047175890| 01| null| ?20406,26963,2,-1,4 ?20407,26963,2,-1,6 cn| 46000| 中国移动| 2| 1| cn| 46002| CMCC| 8986 0040 1412 0102 7922| 5| 460020070962326| 语音信箱| null| true| false
+手机卡：15102014892 中国移动神州行
+0| [26963,30251,-1]| 359465047175890| 01| null| | cn| 46000| 中国移动| 2| 1| cn| 46002| CMCC| 89860030191032044870| 5| 460021020233046| 语音信箱| null| true| false
+ CallState:0| 
+ CellLocation:[26963,30251,-1]| 
+ DeviceId(IMEI):359465047175890| 
+ DeviceSoftwareVersion:01| 
+ Line1Number(MSISDN):null| 
+ NeighboringCellInfo:?7540,26972,2,-1,6 | 
+ NetworkCountryIso:cn| 
+ NetworkOperator:46000| 
+ NetworkOperatorName:中国移动| 
+ NetworkType:2| 
+ PhoneType:1| 
+ SimCountryIso:cn| 
+ SimOperator:46002| 
+ SimOperatorName:CMCC| 
+ SimSerialNumber:8986 0030 1910 3204 4870| 
+ SimState:5| 
+ SubscriberId(IMSI):460 02 1020233046| 
+ MCC:Mobile Country Code是移动用户所属国家代号，占3位数字，中国的MCC规定为460；
+ MNC:Mobile Network Code是移动网号码，最多由两位数字组成，用于识别移动用户所归属的移动通信网；
+ MSIN:Mobile Subscriber Identification Number是移动用户识别码，用以识别某一移动通信网中的移动用户。
+MSIN:Mobile Subscriber Identification Number, 移动用户识别号码,共有10位，其结构如下：
+EF+M0M1M2M3+ABCD
+其中的M0M1M2M3和MDN号码中的H0H1H2H3可存在对应关系，ABCD四位为自由分配。
+ 
+ VoiceMailAlphaTag:语音信箱| 
+ VoiceMailNumber:null| 
+ IccCard:true| 
+ NetworkRoaming:false
+ Build.MODEL:HTC Wildfire S A510e| 
+ Build.VERSION.SDK:10--2.3.5| 
+ Build.BOARD:marvel| 
+ Build.BRAND:htc_asia_tw| 
+ Build.CPU_ABI:armeabi| 
+ Build.DEVICE:marvel| 
+ Build.DISPLAY:GRJ90| 
+ Build.FINGERPRINT:htc_asia_tw/htc_marvel/marvel:2.3.5/GRJ90/202358.1:user/release-keys| 
+ Build.HOST:ABM016| 
+ Build.ID:GRJ90| 
+ Build.MANUFACTURER:HTC| 
+模拟器15555215554
 0| null| 000000000000000| null| 15555215554| us| 310260| Android| 3| 1| us| 310260| Android| 89014103211118510720| 5| 310260000000000| Voicemail| +15552175049| true| false| 
-0| [26963,30251,-1]| 359465047175890| 01| null| cn| 46000| 中国移动| 2| 1| cn| 46002| CMCC| 89860040141201027922| 5| 460020070962326| 语音信箱| null| true| false| 
+
+
+01-30 05:37:50.260: I/System.out(451):  [ SMSAutoReply -- Debug ]  
+telephone info --> 
+CallState:0| 
+CellLocation:null| 
+DeviceId(IMEI):000000000000000| 
+DeviceSoftwareVersion:null| 
+Line1Number(MSISDN):15555215554| 
+NeighboringCellInfo:| 
+NetworkCountryIso:us| 
+NetworkOperator:310260| 
+NetworkOperatorName:Android| 
+NetworkType:3| 
+PhoneType:1| 
+SimCountryIso:us| 
+SimOperator:310260| 
+SimOperatorName:Android| 
+SimSerialNumber:89014103211118510720| 
+SimState:5| 
+SubscriberId(IMSI) 1:,
+baseband_version:,
+iccid:,imei:,
+imeisv:,imsi:,
+line1_number:,
+line1_tag:,
+line1_voice_call_forwarding:,
+voice_mail_number:,
+line1_voice_mail_tag:,
+line1_voice_mail_waiting:,
+operator_alpha:Android,
+operator_ismanual:,
+operator_iso_country:us,
+operator_isroaming:false,
+operator_numric:310260,
+ril_impl:android reference-ril 1.0,
+sim_operator_alpha:Android,
+sim_operator_iso_country:us,
+sim_operator_numric:310260,
+sim_state:READY| 
+SubscriberId(IMSI) 2:310260000000000| 
+VoiceMailAlphaTag:Voicemail| 
+VoiceMailNumber:+15552175049| 
+IccCard:true| 
+NetworkRoaming:false
+Build.MODEL:sdk| 
+Build.VERSION.SDK:10--2.3.3| 
+Build.BOARD:unknown| 
+Build.BRAND:generic| 
+Build.CPU_ABI:armeabi| 
+Build.DEVICE:generic| 
+Build.DISPLAY:sdk-eng 2.3.3 GRI34 101070 test-keys| 
+Build.FINGERPRINT:generic/sdk/generic:2.3.3/GRI34/101070:eng/test-keys| 
+Build.HOST:android-test-26.mtv.corp.google.com| 
+Build.ID:GRI34| 
+Build.MANUFACTURER:unknown| 
+Build.PRODUCT:sdk| 
+Build.TAGS:test-keys| 
+Build.TIME:1296773036000| 
+Build.TYPE:eng| 
+Build.USER:android-build| 
+
+
+-------------------------------------------------------------------------------------------------------------------
+01-30 13:55:54.471: I/System.out(10944):  [ SMSAutoReply -- Debug ]  telephone info --> 
+CallState:0| 
+CellLocation:[26963,30251,-1]| 
+DeviceId(IMEI):359465047175890| 
+DeviceSoftwareVersion:01| 
+Line1Number(MSISDN):null| 
+NeighboringCellInfo:?7540,26972,2,-1,7 | 
+NetworkCountryIso:cn| 
+NetworkOperator:46000| 
+NetworkOperatorName:中国移动| 
+NetworkType:2| 
+PhoneType:1| 
+SimCountryIso:cn| 
+SimOperator:46002| 
+SimOperatorName:CMCC| 
+SimSerialNumber:89860030191032044870| 
+SimState:5| 
+SubscriberId(IMSI) 1:,
+baseband_version: 47.23a.35.3035H_7.53.39.03M,
+iccid:,
+imei:,
+imeisv:,
+imsi:,
+line1_number:,
+line1_tag:,
+line1_voice_call_forwarding:,
+voice_mail_number:,
+line1_voice_mail_tag:,
+line1_voice_mail_waiting:,
+operator_alpha:中国移动,
+operator_ismanual:,
+operator_iso_country:cn,
+operator_isroaming:false,
+operator_numric:46000,
+ril_impl:HTC-RIL 2.2.0206HM (Nov  1 2011,21:27:04),
+sim_operator_alpha:CMCC,
+sim_operator_iso_country:cn,
+sim_operator_numric:46002,
+sim_state:READY| 
+SubscriberId(IMSI) 2:460021020233046| 
+VoiceMailAlphaTag:语音信箱| 
+VoiceMailNumber:null| 
+IccCard:true| 
+NetworkRoaming:false
+Build.MODEL:HTC Wildfire S A510e| 
+Build.VERSION.SDK:10--2.3.5| 
+Build.BOARD:marvel| 
+Build.BRAND:htc_asia_tw| 
+Build.CPU_ABI:armeabi| 
+Build.DEVICE:marvel| 
+Build.DISPLAY:GRJ90| 
+Build.FINGERPRINT:htc_asia_tw/htc_marvel/marvel:2.3.5/GRJ90/202358.1:user/release-keys| 
+Build.HOST:ABM016| 
+Build.ID:GRJ90| 
+Build.MANUFACTURER:HTC| 
+Build.PRODUCT:htc_marvel| 
+Build.TAGS:release-keys| 
+Build.TIME:1322807378000| 
+Build.TYPE:user| 
+Build.USER:unknown| 
+

@@ -212,4 +212,15 @@ public class DateUtils {
 		System.out.println(getDefaultNumberFormat("#0.00%", 0.0123));
 	}
 
+	public static long getTodayZeroLong() {
+		// TODO Auto-generated method stub
+		Date today = new Date();
+		
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd 00:00:00");
+	
+		String longString = simpleDateFormat.format(today);
+		
+		return Long.valueOf(longString);
+	}
+
 }

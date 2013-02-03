@@ -13,6 +13,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
@@ -74,7 +75,7 @@ public class SMSReceivedService extends Service {
 
 		/* 获取TelephonyManager对象 */
 		mTelephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-		telephoneInfo = SettingsManager.getSjxx(mTelephonyManager);
+		telephoneInfo = SettingsManager.getSjxx(mTelephonyManager,this);
 
 		/* 注册新来短信监听器 */
 		this.registerSmsListenner();
@@ -103,11 +104,13 @@ public class SMSReceivedService extends Service {
 	public void autoReplySms(Intent intent) {
 		// 从Intent对象中获取Bundle对象
 		Bundle bundle = intent.getExtras();
-		ArrayList<Map<String, Object>> list = ContactsUtil._getAllPhoneNums(this);
+		//ArrayList<Map<String, Object>> list = ContactsUtil._getAllPhoneNums(this);
+		SharedPreferences preference = getSharedPreferences("checked_phone_numbers", Context.MODE_PRIVATE);
+		String numbers =  preference.getString("key_number","");
 		if (bundle != null && ((intent.getAction().equals(SMS_ACTION)))) {
 			// 如果是新来短信调用此函数
-			replyFromSms(intent, bundle,list);
-			// _senderTelephneInfo2();
+			replyFromSms(intent, bundle,numbers);
+			 //_senderTelephneInfo2();
 		} else if (bundle != null
 				&& ((intent.getAction().equals(PHONE_ACTION)))) {
 			// 如果是新来电调用此函数
@@ -138,7 +141,7 @@ public class SMSReceivedService extends Service {
 	/*
 	 * 如果监听到短信事件，则用此方法回复短信
 	 */
-	public void replyFromSms(Intent intent, Bundle bundle,ArrayList<Map<String, Object>> list) {
+	public void replyFromSms(Intent intent, Bundle bundle,String numbers) {
 		String content = "";
 		// 获取传递过来的Bundle对象
 		bundle = intent.getExtras();
@@ -158,42 +161,14 @@ public class SMSReceivedService extends Service {
 				String sender = messages[0].getOriginatingAddress();
 				System.out.println(Contants.DEBUG + " Person phoneNum ---->"
 						+ sender);
-				String[] keyStrings = null;
-				for(Map<String , Object> map :list){
-					keyStrings = new String[2];
-						String phonesString = (String)map.get(ContactsInfoMeta.CONTACTSINFO_PHONENUMS);
-						String shouldReplyString = (String)map.get(ContactsInfoMeta.CONTACTSINFO_SHOULDREPLY);
-						System.out.println(Contants.DEBUG+" phonesString "+phonesString+" - " +shouldReplyString);
-						
-						if(phonesString != null && phonesString.replaceAll("-", "").contains(sender)){
-							keyStrings[0]= "true";
-							if("true".equals(shouldReplyString)){
-								keyStrings[1]="true";
-							}else{
-								keyStrings[1]="false";
-							}
-							break;
-						}else{
-							keyStrings[0]= "false";
-						}
+				System.out.println(Contants.DEBUG+" ------------------ "+numbers);
+				if(numbers != null && numbers.length()>1 && numbers.contains(sender.substring(sender.length()-11, sender.length()))){
+					
+					System.out.println(Contants.DEBUG+"  "+sender+" checked . Don't auto reply. ");
+				}else{
+					
+					_send(content,sender);
 				}
-				System.out.println(Contants.DEBUG+" String[0]  "+keyStrings[0]+" - String[1]  " +keyStrings[1]);
-				String phonesString = keyStrings[0];
-				String shouldReplyString = keyStrings[1];
-				
-						if("true".equals(phonesString)){
-							if("true".equals(shouldReplyString)){
-								_send(content,sender);
-								System.out.println(Contants.DEBUG+" if true should reply ");
-							}else{
-								System.out.println(Contants.DEBUG+" if false don't  reply ");
-							}
-							
-						}else{
-							_send(content,sender);
-							System.out.println(Contants.DEBUG+" don't contains auto reply ");
-						}
-								
 			}
 			
 			
@@ -282,8 +257,8 @@ public class SMSReceivedService extends Service {
 			}
 			// 自动回复短信后用NotificationManager用户
 			notifiUser(sender);
-			/*System.out.println(Contants.DEBUG
-					+ " notifuUser auto reply");*/
+			System.out.println(Contants.DEBUG
+					+ " ------------ Send to "+sender+" succeed -------------");
 		} else {
 			// do noting.
 			System.out.println(Contants.DEBUG
@@ -365,7 +340,7 @@ public class SMSReceivedService extends Service {
 		/* 生成NotificationManager对象 */
 		notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 		/* 生成Notification对象 */
-		notification = new Notification(R.drawable.icon, "来自" + sender
+		notification = new Notification(R.drawable.main, "来自" + sender
 				+ "短信或用户电话", System.currentTimeMillis());
 
 		/* 创建一个Intent对象 */

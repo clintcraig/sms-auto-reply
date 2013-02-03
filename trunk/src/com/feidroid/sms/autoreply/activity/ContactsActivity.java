@@ -1,53 +1,59 @@
 package com.feidroid.sms.autoreply.activity;
 
+import java.text.Collator;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import android.app.ListActivity;
-import android.content.ContentValues;
+import android.app.Activity;
+import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
+import android.provider.Contacts.People;
+import android.provider.ContactsContract;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
 import android.widget.AbsListView;
+import android.widget.AbsListView.OnScrollListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.ImageView;
+import android.widget.CursorAdapter;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.feidroid.sms.autoreply.R;
 import com.feidroid.sms.autoreply.contants.Contants;
-import com.feidroid.sms.autoreply.entity.ContactsInfoBean;
-import com.feidroid.sms.autoreply.provider.tables.ContactsInfoMeta;
-import com.feidroid.sms.autoreply.util.ContactsUtil;
-import com.feidroid.sms.autoreply.util.GetContentValuesFromBean;
-import com.feidroid.sms.autoreply.widgets.CustomProgressDialog;
+import com.feidroid.sms.autoreply.entity.ContactInfo;
 
-public class ContactsActivity extends ListActivity implements
+public class ContactsActivity extends Activity implements
 		ListView.OnScrollListener {
 
+	// show textview dialog
 	private RemoveWindow mRemoveWindow = new RemoveWindow();
 	Handler mHandler = new Handler();
 	private WindowManager mWindowManager;
@@ -55,231 +61,68 @@ public class ContactsActivity extends ListActivity implements
 	private boolean mShowing;
 	private boolean mReady;
 	private char mPrevLetter = Character.MIN_VALUE;
-	private ArrayList<Map<String, Object>> contactsDataIdAndDisplayName;
-	private ArrayList<Map<String, Object>> contactsData;
-	private EfficientAdapter efficientAdapter = null;
-	private Handler checkboxHandler;
-	private Handler insertHandler;
 
-	private Button selectedButton ;
-	private ArrayList<String> contactsIdStrings = new ArrayList<String>();
-	
-	
-	private  class EfficientAdapter extends BaseAdapter {
-		private LayoutInflater mInflater;
-		private Bitmap mIcon2;
-		private ArrayList<Map<String, Object>> contactsData;
-		private Handler checkboxHandler;
+	private ListView listView;
+	AutoCompleteTextView textView;
+	TextView emptytextView;
+	protected CursorAdapter mCursorAdapter;
+	protected Cursor mCursor = null;
+	protected ContactAdapter ca;
+	ArrayList<ContactInfo> contactList = new ArrayList<ContactInfo>();
+	// 选中的手机号
+	protected String numberStr = "";
+	protected String[] autoContact = null;
+	private static final int DIALOG_KEY = 0;
 
-		public EfficientAdapter(Context context,
-				ArrayList<Map<String, Object>> contactsData,
-				Handler checkboxHandler
-
-		) {
-
-			this.contactsData = contactsData;
-			this.checkboxHandler = checkboxHandler;
-			// Cache the LayoutInflate to avoid asking for a new one each time.
-			mInflater = LayoutInflater.from(context);
-
-			// Icons bound to the rows.
-			mIcon2 = BitmapFactory.decodeResource(context.getResources(),
-					R.drawable.icon48x48_2);
-		}
-
-		/**
-		 * The number of items in the list is determined by the number of
-		 * speeches in our array.
-		 * 
-		 * @see android.widget.ListAdapter#getCount()
-		 */
-		public int getCount() {
-			if (contactsData != null) {
-				return contactsData.size();
-			}
-			return 0;
-		}
-
-		/**
-		 * Since the data comes from an array, just returning the index is
-		 * sufficent to get at the data. If we were using a more complex data
-		 * structure, we would return whatever object represents one row in the
-		 * list.
-		 * 
-		 * @see android.widget.ListAdapter#getItem(int)
-		 */
-		public Object getItem(int position) {
-			return position;
-		}
-
-		/**
-		 * Use the array index as a unique id.
-		 * 
-		 * @see android.widget.ListAdapter#getItemId(int)
-		 */
-		public long getItemId(int position) {
-			return position;
-		}
-
-		/**
-		 * Make a view to hold each row.
-		 * 
-		 * @see android.widget.ListAdapter#getView(int, android.view.View,
-		 *      android.view.ViewGroup)
-		 */
-		public synchronized View getView(final int position, View convertView,
-				final ViewGroup parent) {
-			// A ViewHolder keeps references to children views to avoid
-			// unneccessary calls
-			// to findViewById() on each row.
-			ViewHolder holder;
-
-			// When convertView is not null, we can reuse it directly, there is
-			// no need
-			// to reinflate it. We only inflate a new View when the convertView
-			// supplied
-			// by ListView is null.
-			if (convertView == null) {
-				convertView = mInflater.inflate(R.layout.list_item_icon_text,
-						null);
-
-				// Creates a ViewHolder and store references to the two children
-				// views
-				// we want to bind data to.
-				holder = new ViewHolder();
-				holder.text = (TextView) convertView.findViewById(R.id.text);
-				holder.textId = (TextView) convertView
-						.findViewById(R.id.textId);
-				holder.icon = (ImageView) convertView.findViewById(R.id.icon);
-				holder.checkbox = (CheckBox) convertView
-						.findViewById(R.id.checkbox);
-				convertView.setTag(holder);
-			} else {
-				// Get the ViewHolder back to get fast access to the TextView
-				// and the ImageView.
-				holder = (ViewHolder) convertView.getTag();
-			}
-
-			if (holder != null) {
-				// Bind the data efficiently with the holder.
-				if (contactsData.size() > 0 && position < contactsData.size()) {
-					final String displayName = (String) contactsData.get(
-							position).get(Contants.KEY_CONTACTS_DISPLAYNAME);
-					holder.text.setText(displayName);
-					final String contacts_id = (String) contactsData.get(position)
-							.get(Contants.KEY_CONTACTS_ID);
-					holder.textId.setText(contacts_id);
-
-					holder.icon.setImageBitmap(contactsData.get(position).get(
-							Contants.KEY_CONTACTS_PHOTOBMP) == null ? mIcon2
-							: (Bitmap) contactsData.get(position).get(
-									Contants.KEY_CONTACTS_PHOTOBMP));
-					final boolean isChecked = (Boolean) contactsData.get(
-							position).get(Contants.KEY_CONTACTS_ISCHECKED);
-					
-					holder.checkbox.setChecked(isChecked);
-					holder.checkbox.setOnClickListener(new OnClickListener() {
-						@Override
-						public void onClick(View v) {
-							System.out.println(Contants.DEBUG+" check  ----> " +isChecked);
-							if (isChecked) {
-								
-								Toast.makeText(parent.getContext(),"cancel",Toast.LENGTH_SHORT ).show();
-								/*_updateContactsInfo(String.valueOf(isChecked),contacts_id);*/
-								for(int i=0;i<  contactsIdStrings.size();i++){
-									System.out.println(Contants.DEBUG+" contactsIdStrings.get(i) --------> "+contactsIdStrings.get(i));
-									
-									if(contacts_id.equals(contactsIdStrings.get(i))){
-										contactsIdStrings.remove(contacts_id);
-										System.out.println(Contants.DEBUG+" remove --------> "+contacts_id);
-									}
-								}
-								selectedButton.setText(getResources().getString(R.string.selectbtn_str)+"("+contactsIdStrings.size()+")");
-								contactsData.get(position).put(Contants.KEY_CONTACTS_ISCHECKED, false);
-								
-							} else {
-								Toast.makeText(parent.getContext(),"check",Toast.LENGTH_SHORT ).show();
-								/*_updateContactsInfo(String.valueOf(isChecked),contacts_id);*/
-								if(!contactsIdStrings.contains(contacts_id)){
-								System.out.println(Contants.DEBUG+" contacts_id --------> "+contacts_id);
-								
-									contactsIdStrings.add(contacts_id);
-								}
-								selectedButton.setText(getResources().getString(R.string.selectbtn_str)+"("+contactsIdStrings.size()+")");
-								contactsData.get(position).put(Contants.KEY_CONTACTS_ISCHECKED, true);
-								
-							}
-							System.out.println(Contants.DEBUG+" -------- "+contactsIdStrings);
-							checkboxHandler.sendEmptyMessage(0);
-						}
-					});
-				}
-			}
-			return convertView;
-		}
-
-		 class ViewHolder {
-			TextView text;
-			TextView textId;
-			ImageView icon;
-			CheckBox checkbox;
-		}
-	}
-
-	private void _selectSomeContacts() {
-		// TODO Auto-generated method stub
-		for(int i=0;i<contactsIdStrings.size();i++){
-			_updateContactsInfo("false", contactsIdStrings.get(i));
-		}
-	}
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		this.setContentView(R.layout.contacts);
-		selectedButton = (Button) findViewById(R.id.selectbtn);
-		selectedButton.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				if(contactsIdStrings != null && contactsIdStrings.size()>0){
-					Toast.makeText(ContactsActivity.this, "selected", Toast.LENGTH_SHORT).show();
-					_selectSomeContacts();
-				}
-			}
+		this.setContentView(R.layout.contacts_bg);
 
-			
-		});
 		mWindowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
-
-		// Use an existing ListAdapter that will map an array
-		// of strings to TextViews
-		/*
-		 * ArrayAdapter<Object> arrayAdapter = new ArrayAdapter<Object>(this,
-		 * android.R.layout.simple_list_item_1, DATA);
-		 */
-		_setListView();
-
-		/*
-		 * efficientAdapter = new
-		 * EfficientAdapter(this,contactsData,checkboxHandler);
-		 * setListAdapter(efficientAdapter);
-		 */
-
-		new InitDataAsyncTask().execute(this);
-		checkboxHandler = new Handler() {
-			public void handleMessage(Message msg) {
-				super.handleMessage(msg);
-				Log.i(Contants.DEBUG, "refreshing...");
-				new RefreshContactsDataAsyncTask().execute();
-				Log.i(Contants.DEBUG, "refreshing  completed");
-			}
-		};
 
 		LayoutInflater inflate = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
 		mDialogText = (TextView) inflate.inflate(R.layout.list_position, null);
+
 		mDialogText.setVisibility(View.INVISIBLE);
 
-		getListView().setOnScrollListener(this);
+		listView = (ListView) this.findViewById(R.id.list);
+		textView = (AutoCompleteTextView) findViewById(R.id.edit);
+		emptytextView = (TextView) findViewById(R.id.empty);
+		Button btn_add = (Button) findViewById(R.id.btn_add);
+		Button btn_back = (Button) findViewById(R.id.btn_back);
+
+		emptytextView.setVisibility(View.GONE);
+
+		// 启动进程
+		new GetContactTask().execute("");
+
+		// 列表点击事件监听
+		listView.setOnItemClickListener(new OnItemClickListener() {
+			public void onItemClick(AdapterView parent, View view,
+					int position, long id) {
+				LinearLayout ll = (LinearLayout) view;
+				CheckBox cb = (CheckBox) ll.getChildAt(0).findViewById(
+						R.id.check);
+				// 选中则加入选中字符串中,取消则从字符串中删除
+				if (cb.isChecked()) {
+					cb.setChecked(false);
+					numberStr = numberStr.replace(","+ contactList.get(position).getUserNumber(), "");
+					contactList.get(position).isChecked = false;
+				} else {
+					cb.setChecked(true);
+					numberStr += ","+ contactList.get(position).getUserNumber();
+					contactList.get(position).isChecked = true;
+				}
+			}
+		});
+
+		btn_add.setOnClickListener(btnClick);
+		btn_back.setOnClickListener(btnClick);
+
+		listView.setOnScrollListener(this);
+		// handler for handle dialog textview
 		mHandler.post(new Runnable() {
 
 			public void run() {
@@ -295,287 +138,316 @@ public class ContactsActivity extends ListActivity implements
 			}
 		});
 
-		insertHandler = new Handler() {
-			public void handleMessage(Message msg) {
-				super.handleMessage(msg);
-				Log.i(Contants.DEBUG, "inserting contactsinfo to database...");
-				_insertContactsInfo();
-				Log.i(Contants.DEBUG, "insert into table complete...");
-			}
-		};
-
+		
 	}
 
-	private void _insertContactsInfo() {
+	// 按钮监听
+	private OnClickListener btnClick = new OnClickListener() {
+		public void onClick(View v) {
+			switch (v.getId()) {
+			case R.id.btn_add:
+				// 点击确认将选中的手机号回传
+				Log.i("eoe", numberStr);
+				SharedPreferences preference = getSharedPreferences("checked_phone_numbers", Context.MODE_PRIVATE);
+				Editor editor = preference.edit();
+				editor.putString("key_number",numberStr);
+				editor.commit();
+				break;
 
-		contactsData = ContactsUtil._setContactsData(this);
-		List<ContactsInfoBean> list = _getContactInfoBean(contactsData);
-		for (ContactsInfoBean contactsInfoBean : list) {
-			if (!ContactsUtil._existByContactsId(contactsInfoBean.getContactId(), this)) {
-
-				Uri uri = getContentResolver().insert(
-						ContactsInfoMeta.CONTENT_URI,
-						GetContentValuesFromBean
-								.getContactsValues(contactsInfoBean));
-				if (uri != null) {
-					//System.out.println(Contants.DEBUG +">"+ contactsInfoBean.getContactId()+" uri  isnert success ----> " + uri);
-				}
-			}
-			else {
-				int update = getContentResolver().update(
-						ContactsInfoMeta.CONTENT_URI,
-						GetContentValuesFromBean
-								.getContactsValues(contactsInfoBean), ContactsInfoMeta.CONTACTSINFO_ID+" = ?",
-						new String[]{contactsInfoBean.getContactId()});
-				//System.out.println(Contants.DEBUG + " update success ----->" + update);
-
+			case R.id.btn_back:
+				//finish();
+				break;
 			}
 		}
-
-	}
-
-	private List<ContactsInfoBean> _getContactInfoBean(
-			ArrayList<Map<String, Object>> contactsData2) {
-		// TODO Auto-generated method stub
-		List<ContactsInfoBean> list = new ArrayList<ContactsInfoBean>();
-		for (Map<String, Object> map : contactsData2) {
-
-			ContactsInfoBean cib = new ContactsInfoBean();
-			// System.out.println(Contants.DEBUG+" _ID -----> "+
-			// (String)map.get(Contants.KEY_CONTACTS_ID));
-			cib.setContactId((String) map.get(Contants.KEY_CONTACTS_ID));
-			cib.setContactDisplayName((String) (map
-					.get(Contants.KEY_CONTACTS_DISPLAYNAME)));
-			cib.setContactPhoneNums((String) map
-					.get(Contants.KEY_CONTACTS_PHONENUMS));
-			cib.setContactshouldRely((Boolean) (map
-					.get(Contants.KEY_CONTACTS_ISCHECKED)) == false ? "true"
-					: "false");
-			cib.setContactEmail((String) map.get(Contants.KEY_CONTACTS_EMAILS));
-			cib.setContactIMs((String) map.get(Contants.KEY_CONTACTS_IMS));
-			list.add(cib);
+	};
+	// 监听AUTOTEXT内容变化,当出现符合选中联系人[联系人(手机号)]的情况下,将该勾中,并加入选中手机号中
+	private TextWatcher mTextWatcher = new TextWatcher() {
+		public void beforeTextChanged(CharSequence s, int start, int before,
+				int after) {
 		}
-		return list;
-	}
 
-	private CustomProgressDialog loadingDialog = null;
+		public void onTextChanged(CharSequence s, int start, int before,
+				int after) {
 
-	private class RefreshContactsDataAsyncTask extends
-			AsyncTask<Context, Void, String> {
-		@Override
-		protected void onPostExecute(String result) {
-			// TODO Auto-generated method stub
-			super.onPostExecute(result);
-			if (result != null) {
-				if (result.length() > 0) {
-					Toast.makeText(ContactsActivity.this,
-							Contants.ERROR + " " + result, Toast.LENGTH_SHORT)
+			String autoText = s.toString();
+			if (autoText.length() >= 13) {
+				Pattern pt = Pattern.compile("\\(([1][3,5,8]+\\d{9})\\)");
+				Matcher mc = pt.matcher(autoText);
+				if (mc.find()) {
+					String sNumber = mc.group(1);
+					DealWithAutoComplete(contactList, sNumber);
+					// 刷新列表
+					Toast.makeText(ContactsActivity.this, getResources().getString(R.string.has_checked_your_search), 1000)
 							.show();
-				} else {
-					efficientAdapter.notifyDataSetChanged();
-					setListAdapter(efficientAdapter);
+					ca.setItemList(contactList);
+					ca.notifyDataSetChanged();
 				}
 			}
-			loadingDialog.dismiss();
+		}
+
+		public void afterTextChanged(Editable s) {
+		}
+
+	};
+
+	// 获取通讯录进程
+	private class GetContactTask extends AsyncTask<String, String, String> {
+		public String doInBackground(String... params) {
+			/*
+			 * try{ Thread.sleep(4000); } catch(Exception e){}
+			 */
+			// 从本地手机中获取
+			GetLocalContact();
+			// 从SIM卡中获取
+			GetSimContact("content://icc/adn");
+			// 发现有得手机的SIM卡联系人在这个路径...所以都取了(每次验证是否已存在)
+			GetSimContact("content://sim/adn");
+			return "";
 		}
 
 		@Override
 		protected void onPreExecute() {
-			// TODO Auto-generated method stub
-			super.onPreExecute();
-//			loadingDialog = new CustomProgressDialog(ContactsActivity.this);
-//			loadingDialog.show();
-
+			showDialog(DIALOG_KEY);
 		}
 
 		@Override
-		protected String doInBackground(Context... params) {
-			// TODO Auto-generated method stub
-			String resultString = "";
-			try {
+		public void onPostExecute(String Re) {
+			// 绑定LISTVIEW
+			if (contactList.size() == 0) {
+				emptytextView.setVisibility(View.VISIBLE);
+			} else {
+				// 按中文拼音顺序排序
+				Comparator comp = new Mycomparator();
+				Collections.sort(contactList, comp);
 
-			} catch (Exception e) {
-				resultString = e.getMessage();
+				// numberStr = GetNotInContactNumber(wNumStr, contactList) +
+				// numberStr;
+				ca = new ContactAdapter(ContactsActivity.this, contactList);
+				listView.setAdapter(ca);
+				listView.setTextFilterEnabled(true);
+				// 编辑AUTOCOMPLETE数组
+				autoContact = new String[contactList.size()];
+				for (int c = 0; c < contactList.size(); c++) {
+					autoContact[c] = contactList.get(c).contactName + "("
+							+ contactList.get(c).userNumber + ")";
+				}
+				// 绑定AUTOCOMPLETE
+				ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+						ContactsActivity.this,
+						android.R.layout.simple_dropdown_item_1line,
+						autoContact);
+				textView.setAdapter(adapter);
+				textView.addTextChangedListener(mTextWatcher);
 			}
-			return resultString;
+			removeDialog(DIALOG_KEY);
 		}
 	}
 
-	/**
-	 * @author feidroid InitDataAsyncTask
-	 */
-	private class InitDataAsyncTask extends AsyncTask<Context, Void, String> {
+	// 弹出"查看"对话框
+	@Override
+	protected Dialog onCreateDialog(int id) {
+		switch (id) {
+		case DIALOG_KEY: {
+			ProgressDialog dialog = new ProgressDialog(this);
+			dialog.setMessage(getResources().getString(R.string.loading_contacts));
+			dialog.setIndeterminate(true);
+			dialog.setCancelable(true);
+			return dialog;
+		}
+		}
+		return null;
+	}
 
-		@Override
-		protected void onPostExecute(String result) {
-			// TODO Auto-generated method stub
-			super.onPostExecute(result);
-			if (result != null) {
-				if (result.length() > 0) {
-					Toast.makeText(ContactsActivity.this,
-							Contants.ERROR + " " + result, Toast.LENGTH_SHORT)
-							.show();
-				} else {
-					efficientAdapter = new EfficientAdapter(
-							ContactsActivity.this, contactsDataIdAndDisplayName,
-							checkboxHandler);
-					setListAdapter(efficientAdapter);
-				    insertHandler.sendEmptyMessage(0);
+	// 从本机中取号
+	private void GetLocalContact() {
+		// 读取手机中手机号
+		Cursor cursor = getContentResolver().query(People.CONTENT_URI, null,null, null, null);
+		//Cursor cursor = getContentResolver().query(ContactsContract.Contacts.CONTENT_URI, null,null, null, null);
+		while (cursor.moveToNext()) {
+			ContactInfo cci = new ContactInfo();
+			// 取得联系人名字
+			int nameFieldColumnIndex = cursor.getColumnIndex(People.NAME);
+			//int nameFieldColumnIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME);
+			cci.contactName = cursor.getString(nameFieldColumnIndex);
+			// 取得电话号码1.6版本或之前的获取方法
+			int numberFieldColumnIndex = cursor.getColumnIndex(People.NUMBER);
+			//2.1版本及之后获取方法-------------------------------------------------------------------------
+			/*String contactId = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
+			StringBuilder phoneNumbers = new StringBuilder();
+			int numberFieldColumnIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
+			 // 查看该联系人有多少个电话号码。如果没有这返回值为0  
+            int phoneCount = cursor.getInt(cursor.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER));  
+            if (phoneCount > 0) {  
+                // 获得联系人的电话号码  
+                Cursor phones = getContentResolver().query(  
+                        ContactsContract.CommonDataKinds.Phone.CONTENT_URI,  
+                        null,  
+                        ContactsContract.CommonDataKinds.Phone.CONTACT_ID  
+                                + " = " + contactId, null, null);  
+               while (phones != null && phones.moveToNext()) {
+            	   phoneNumbers.append(phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)))
+            	   .append(Contants.IncentDelimiter);
+               }
+               phoneNumbers.deleteCharAt(phoneNumbers.length());
+            }  */
+            //--------------------------------------------------------------------------------------------------
+			cci.userNumber = cursor.getString(numberFieldColumnIndex);
+			cci.userNumber = GetNumber(cci.userNumber);
+			cci.isChecked = false;
+			if (IsUserNumber(cci.userNumber)) {
+				if (!IsContain(contactList, cci.userNumber)) {
+					/*
+					 * if(IsAlreadyCheck(wNumStr, cci.userNumber)){
+					 * cci.isChecked = true; numberStr += "," + cci.userNumber;
+					 * }
+					 */
+					contactList.add(cci);
+					Log.i("eoe", "*********" + cci.userNumber);
 				}
 			}
-			loadingDialog.dismiss();
 		}
+		cursor.close();
+	}
 
-		@Override
-		protected void onPreExecute() {
-			// TODO Auto-generated method stub
-			super.onPreExecute();
-			loadingDialog = new CustomProgressDialog(ContactsActivity.this);
-			loadingDialog.show();
+	// 从SIM卡中取号
+	private void GetSimContact(String add) {
+		// 读取SIM卡手机号,有两种可能:content://icc/adn与content://sim/adn
+		try {
+			Intent intent = new Intent();
+			intent.setData(Uri.parse(add));
+			Uri uri = intent.getData();
+			mCursor = getContentResolver().query(uri, null, null, null, null);
+			if (mCursor != null) {
+				while (mCursor.moveToNext()) {
+					ContactInfo sci = new ContactInfo();
+					// 取得联系人名字
+					int nameFieldColumnIndex = mCursor.getColumnIndex("name");
+					sci.contactName = mCursor.getString(nameFieldColumnIndex);
+					// 取得电话号码
+					int numberFieldColumnIndex = mCursor
+							.getColumnIndex("number");
+					sci.userNumber = mCursor.getString(numberFieldColumnIndex);
 
-		}
+					sci.userNumber = GetNumber(sci.userNumber);
+					sci.isChecked = false;
 
-		@Override
-		protected String doInBackground(Context... params) {
-			// TODO Auto-generated method stub
-			String resultString = "";
-			try {
-				contactsDataIdAndDisplayName = ContactsUtil
-						._setContactsIdAndDisplayName(params[0]);
-				System.out.println(Contants.DEBUG
-						+ " contactsDataIdAndDisplayName size  ---> "
-						+ contactsDataIdAndDisplayName.size());
-			} catch (Exception e) {
-				resultString = e.getMessage();
+					if (IsUserNumber(sci.userNumber)) {
+						if (!IsContain(contactList, sci.userNumber)) {
+							/*
+							 * if(IsAlreadyCheck(wNumStr, sci.userNumber)){
+							 * sci.isChecked = true; numberStr += "," +
+							 * sci.userNumber; }
+							 */
+							contactList.add(sci);
+							Log.i("eoe", "*********" + sci.userNumber);
+						}
+					}
+				}
+				mCursor.close();
 			}
-			return resultString;
+		} catch (Exception e) {
+			Log.i("eoe", e.toString());
 		}
-
 	}
 
-	private void _setListView() {
-		// TODO Auto-generated method stub
-		/* 快速滚动滑块 */
-		getListView().setFastScrollEnabled(true);
-		/* false:点击某条记录不放，颜色会在记录的后面，成为背景色，但是记录内容的文字是可见的,true则相反 */
-		getListView().setDrawSelectorOnTop(false);
-		/* 实现滚动条的自动隐藏和显示 */
-		getListView().setFadingEdgeLength(0);
-
-		getListView().setCacheColorHint(Color.TRANSPARENT);
-
-		getListView().setTranscriptMode(
-				AbsListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
-		/* 设置了该属性之后你做好的列表就会显示你列表的最下面 */
-		// getListView().setStackFromBottom(true);
-	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// TODO Auto-generated method stub
-		// Inflate the currently selected menu XML resource.
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.title_icon, menu);
-
-		return super.onCreateOptionsMenu(menu);
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		// For "Title only": Examples of matching an ID with one assigned in
-		// the XML
-		case R.id.select_all_contacts:
-			Toast.makeText(this,
-					getResources().getString(R.string.select_all_checkbox),
-					Toast.LENGTH_SHORT).show();
-			_selectAllContacts();
-			return true;
-
-		case R.id.deselect_all_contacts:
-			Toast.makeText(this,
-					getResources().getString(R.string.deselect_all_checkbox),
-					Toast.LENGTH_SHORT).show();
-			_deselectAllContacts();
-			return true;
-		case R.id.search_contacts:
-			// The refresh item is part of the browser group
-			Toast.makeText(this,
-					getResources().getString(R.string.searchform_all_checkbox),
-					Toast.LENGTH_SHORT).show();
-			_searchFromAllContacts();
-			return true;
+	// 是否在LIST有值
+	private boolean IsContain(ArrayList<ContactInfo> list, String un) {
+		for (int i = 0; i < list.size(); i++) {
+			if (un.equals(list.get(i).userNumber)) {
+				return true;
+			}
 		}
 		return false;
 	}
 
-	private void _searchFromAllContacts() {
-		// TODO search contacts
-
-	}
-
-	private void _deselectAllContacts() {
-		int count = getListView().getCount();
-		for (int index = 0; index < count; index++) {
-			contactsDataIdAndDisplayName.get(index).put(Contants.KEY_CONTACTS_ISCHECKED, false);
+	// 手输手机号的是否在通讯录中
+	private boolean IsAlreadyCheck(String[] Str, String un) {
+		for (int i = 0; i < Str.length; i++) {
+			if (un.equals(Str[i])) {
+				return true;
+			}
 		}
-		checkboxHandler.sendEmptyMessage(0);
-		//取消全选，true 允许自动回复
-		_updateContactsInfo("true","all");
-		
+		return false;
 	}
 
-	private void _selectAllContacts() {
-		// TODO select all contacts
-		int count = getListView().getCount();
-		for (int i = 0; i < count; i++) {
-			contactsDataIdAndDisplayName.get(i).put(Contants.KEY_CONTACTS_ISCHECKED, true);
+	// 获取手输手机号不在通讯录中的号码
+	private String GetNotInContactNumber(String[] Str,
+			ArrayList<ContactInfo> list) {
+		String re = "";
+		for (int i = 0; i < Str.length; i++) {
+			if (IsUserNumber(Str[i])) {
+				for (int l = 0; l < list.size(); l++) {
+					if (Str[i].equals(list.get(l).userNumber)) {
+						Str[i] = "";
+						break;
+					}
+				}
+				if (!Str[i].equals("")) {
+					re += "," + Str[i];
+				}
+			}
 		}
-		 System.out.println(Contants.DEBUG+" count ----> "+count
-		 +" --------> ");
-		checkboxHandler.sendEmptyMessage(0);
-		//全选   "false"将contacts_shouldreply  = "false"
-		_updateContactsInfo("false","all");
+		return re;
 	}
 
-	public void _updateContactsInfo(String string,String allOrContactsId) {
-		
-		ContentValues values = new  ContentValues();
-		int update = 0;
-		if("all".equals(allOrContactsId)){
-			
-			values.put(ContactsInfoMeta.CONTACTSINFO_SHOULDREPLY, string);
-			update  = getContentResolver().update(
-					ContactsInfoMeta.CONTENT_URI
-					, values
-					,null,
-					null);
-		}else{
-			
-			values.put(ContactsInfoMeta.CONTACTSINFO_SHOULDREPLY, string);
-			update = getContentResolver().update(
-					ContactsInfoMeta.CONTENT_URI
-					, values
-					,ContactsInfoMeta.CONTACTSINFO_ID+"  = ?",
-					new String[]{allOrContactsId});
-			
+	// 处理搜索框选中的手机号
+	private void DealWithAutoComplete(ArrayList<ContactInfo> list, String un) {
+		for (int i = 0; i < list.size(); i++) {
+			if (un.equals(list.get(i).userNumber)) {
+				if (!list.get(i).isChecked) {
+					list.get(i).isChecked = true;
+					numberStr += "," + un;
+					textView.setText("");
+				}
+			}
 		}
-		System.out.println(Contants.DEBUG + " update success ----->" + update);
 	}
 
+	// 通讯社按中文拼音排序
+	public class Mycomparator implements Comparator {
+		public int compare(Object o1, Object o2) {
+			ContactInfo c1 = (ContactInfo) o1;
+			ContactInfo c2 = (ContactInfo) o2;
+			Comparator cmp = Collator.getInstance(java.util.Locale.CHINA);
+			return cmp.compare(c1.contactName, c2.contactName);
+		}
+
+	}
+
+	// 是否为手机号码
+	public static boolean IsUserNumber(String num) {
+		boolean re = false;
+		if (num.length() == 11) {
+			if (num.startsWith("13")) {
+				re = true;
+			} else if (num.startsWith("15")) {
+				re = true;
+			} else if (num.startsWith("18")) {
+				re = true;
+			}
+		}
+		return re;
+	}
+
+	// 还原11位手机号
+	public static String GetNumber(String num) {
+		if (num != null) {
+			if (num.startsWith("+86")) {
+				num = num.substring(3);
+			} else if (num.startsWith("86")) {
+				num = num.substring(2);
+			}
+		} else {
+			num = "";
+		}
+		return num;
+	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
 		mReady = true;
-		Intent intent = getIntent();
-		if("com.feidroid.sms.autoreply.action.CONTACTSINFO"
-				.equals(intent.getAction())){
-			contactsDataIdAndDisplayName = ContactsUtil._setContactsIdAndDisplayName(this);
-			efficientAdapter.notifyDataSetChanged();
-			System.out.println(Contants.DEBUG + " come back......  ");
-		}
-		System.out.println(Contants.DEBUG + " on resume  ");
+		Log.d(Contants.DEBUG, "contacts  on resume  ");
 	}
 
 	@Override
@@ -601,30 +473,37 @@ public class ContactsActivity extends ListActivity implements
 	public void onScroll(AbsListView view, int firstVisibleItem,
 			int visibleItemCount, int totalItemCount) {
 		int lastItem = firstVisibleItem + visibleItemCount - 1;
-		if (mReady) {
-			/* char firstLetter = DATA[firstVisibleItem].charAt(0); */
+		if (mReady && contactList != null && contactList.size()>0) {
+			char firstLetter = contactList.get(firstVisibleItem).getContactName().charAt(0);
 
-			if (contactsData != null && contactsData.size() > 0
-					&& firstVisibleItem < contactsData.size()) {
+			if (!mShowing && firstLetter != mPrevLetter) {
 
-				char firstLetter = ((String) contactsData.get(firstVisibleItem)
-						.get(Contants.KEY_CONTACTS_DISPLAYNAME)).charAt(0);
-				if (!mShowing && firstLetter != mPrevLetter) {
-
-					mShowing = true;
-					mDialogText.setVisibility(View.VISIBLE);
-
-				}
-				mDialogText.setText(((Character) firstLetter).toString());
-				mHandler.removeCallbacks(mRemoveWindow);
-				mHandler.postDelayed(mRemoveWindow, 3000);
-				mPrevLetter = firstLetter;
+				mShowing = true;
+				mDialogText.setVisibility(View.VISIBLE);
 
 			}
+			mDialogText.setText(((Character) firstLetter).toString());
+			mHandler.removeCallbacks(mRemoveWindow);
+			mHandler.postDelayed(mRemoveWindow, 3000);
+			mPrevLetter = firstLetter;
+
 		}
+
 	}
 
+	int listPosition;
+
 	public void onScrollStateChanged(AbsListView view, int scrollState) {
+		// 不滚动时保存当前滚动到的位置
+		if (scrollState == OnScrollListener.SCROLL_STATE_IDLE) {
+			/*
+			 * if (currentMenuInfo != null) { scrolledX = listView.getScrollX();
+			 * scrolledY = listView.getScrollY(); }
+			 */
+			listPosition = listView.getFirstVisiblePosition();
+			System.out.println(Contants.DEBUG + " SCROLL_STATE_IDLE "
+					+ listPosition);
+		}
 	}
 
 	private void removeWindow() {
@@ -632,6 +511,73 @@ public class ContactsActivity extends ListActivity implements
 			mShowing = false;
 			mDialogText.setVisibility(View.INVISIBLE);
 		}
+	}
+
+	class ContactAdapter extends BaseAdapter {
+
+		private LayoutInflater mInflater;
+		ArrayList<ContactInfo> itemList;
+
+		public ContactAdapter(Context context, ArrayList<ContactInfo> itemList) {
+			mInflater = LayoutInflater.from(context);
+			this.itemList = itemList;
+		}
+
+		public ArrayList<ContactInfo> getItemList() {
+			return itemList;
+		}
+
+		public void setItemList(ArrayList<ContactInfo> itemList) {
+			this.itemList = itemList;
+		}
+
+		public int getCount() {
+			// TODO Auto-generated method stub
+			return itemList.size();
+		}
+
+		public Object getItem(int position) {
+			return position;
+		}
+
+		public long getItemId(int position) {
+			return position;
+		}
+
+		// 这个比较特殊,adapter是在页面变化的时候,重新获取当前页面的数据
+		public View getView(int position, View convertView, ViewGroup parent) {
+			// TODO Auto-generated method stub
+			ViewHolder holder;
+
+			convertView = mInflater.inflate(R.layout.list_item_contactsinfo,
+					null);
+			holder = new ViewHolder();
+			holder.mname = (TextView) convertView.findViewById(R.id.mname);
+			//holder.mname.setSelected(true);
+			holder.msisdn = (TextView) convertView.findViewById(R.id.msisdn);
+			//holder.msisdn.setSelected(true);
+			holder.check = (CheckBox) convertView.findViewById(R.id.check);
+
+			convertView.setTag(holder);
+			
+			holder.mname.setText(itemList.get(position).getContactName());
+			holder.msisdn.setText(getResources().getString(R.string.phone)
+					+ itemList.get(position).getUserNumber());
+			holder.check.setChecked(itemList.get(position).getIsChecked());
+			
+			return convertView;
+		}
+
+		class ViewHolder {
+			TextView mname;
+			TextView msisdn;
+			CheckBox check;
+		}
+
+		class ViewProgressHolder {
+			TextView text;
+		}
+
 	}
 
 }
